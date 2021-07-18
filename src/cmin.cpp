@@ -1,28 +1,55 @@
 #include <iostream>
+#include <cmath>
 #include <sstream>
 #include <fstream>
 #include <set>
 #include <queue>
 #include <vector>
+#include <climits>
+#include "utils.h"
 
 
 using namespace std;
 
 class CountMinSketch{
-
     private:
-        // TODO
+        int P = INT_MAX; // mersenne prime => 2 ^31 - 1
+        int t, k;
+        vector<vector<int>> hashFunctions, C;
+        Utils U;
+
+        /**
+         * Returns the i-th position of x
+         * */
+        int getHash(int i, int x){
+            vector<int> &ab = hashFunctions[i];
+            return ((ab[0] * x % P + b) % P) % k;
+        }
+
     public:
         CountMinSketch(double eps, double delta){
-            // TODO
+            k = int(2.0/eps);
+            t = ceil(log(1.0/delta));
+            for(int i = 0; i < t; i++){
+                hashFunctions.push_back(U.getNewHashFunction(P));
+            }
+            C.assign(t, vector<int>(0,k)); // C matrix (t x k)
         }
-        void update(int x, int w){
-            // TODO
-        }
-        int query(int x){
-            // TODO
 
-            return 0;
+        void update(int x, int w){
+            for(int i = 0; i < t; i++){
+                int j = getHash(i, x);
+                C[i][j] += w;
+            }
+        }
+
+        int query(int x){
+            int estimated_weigth = INT_MAX;
+            for(int i = 0; i < t; i++){
+                int j = getHash(i, x);
+                estimated_weigth = min(estimated_weigth, C[i][j]);
+            }
+            return estimated_weigth;
         }
 };
 
@@ -36,18 +63,20 @@ const set<string> possibleOptions = {
 };
 
 int id = 0; // default column to be used as id
-int weight = 1; // default column to be used as weights
-double eps = 0.5; // default error bound // TODO: entender isso aqui
-double delta = 0.5;// default error probability // TODO: entender isso aqui tbm
+int weight = 4; // default column to be used as weights
+double eps = 0.1; // default error bound
+double delta = 0.05;// default error probability
 vector<int> queryIds; // ids to be queried in the end
+
 queue<string> argsQueue; // queue to store args temporarely
 
 void invalidArgument(string &arg){
-    cerr << "Invalid argument: " << arg << endl;
+    cerr << "Invalid argument: " << arg << '\n';
     exit(1);
 }
+
 void missingArgumentValue(string &arg){
-    cerr << "missing argument value for " << arg << endl;
+    cerr << "missing argument value for " << arg << '\n';
     exit(1);
 }
 
@@ -73,6 +102,9 @@ void tryUpdateArg(string &arg, string argName, int &var){
 void tryUpdateArg(string &arg, string argName, double &var){
     if(arg == argName){
         if(argsQueue.empty()){
+            missingArgumentValue(arg);
+        }
+        if(possibleOptions.count(argsQueue.front())){
             missingArgumentValue(arg);
         }
         var = stod(argsQueue.front());
@@ -124,7 +156,7 @@ void tryUpdateQueryListByFile(string &arg, string argName){
 
         }
         if(queryIds.empty()){
-            cerr << "empty file" << endl;
+            cerr << "empty file" << '\n';
             exit(1);
         }
     }
@@ -152,13 +184,14 @@ void printvec(vector<int> &v){
 
 int main(int args, char **argv){
 
-    for(int i = 1; i < args; i++){
+    for(int i = 1; i < args - 1; i++){
         argsQueue.push(argv[i]);
     }
 
+    string datasetFilename = argv[args - 1];
+
     updateArgs();
 
-    // TODO: ler x e w do dataset seguindo as informacoes nos parametros
 
     cout << "using: " << '\n';
     cout << "id=" << id << '\n';
@@ -168,9 +201,14 @@ int main(int args, char **argv){
     cout << "queries=";
     printvec(queryIds);
 
+    CountMinSketch sketch(eps, delta);
+
+    // TODO: ler x e w do dataset seguindo as informacoes nos parametros
+
     for(int q : queryIds){
-        // TODO: printar o retorno da query do count min sketch
+        cout << sketch.query(q) << ' ';
     }
+    cout << '\n';
 
     return 0;
 }
