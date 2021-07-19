@@ -8,5 +8,6 @@ default:
 build:
 	g++ $(CPP_FLAGS) $(COUNT_MIN_PATH) -o $(COUNT_MIN_BIN_PATH)
 
-install:
-	#TODO
+install: build
+	# TODO
+	

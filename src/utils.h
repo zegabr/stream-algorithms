@@ -1,8 +1,9 @@
+#ifndef UTILS_TAA
+#define UTILS_TAA 1
 #include <vector>
 
 class Utils{
  // TODO: aqui vao ficar metodos tipo: ler de csv, criar funcoes hash, pegar parametros (ou a gt pode separar em 3 tbm)
- // tbm n precisa ser uma classe, a gt pode só sair metendo os metodos e importar eles ou fazer mais de uma classe nesse arquivo tb, sei la
     private:
 
     public:
@@ -11,3 +12,5 @@ class Utils{
             return {1,2};
         }
 };
+
+#endif

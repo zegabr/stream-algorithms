@@ -23,7 +23,8 @@ class CountMinSketch{
          * */
         int getHash(int i, int x){
             vector<int> &ab = hashFunctions[i];
-            return ((ab[0] * x % P + b) % P) % k;
+            // return ((ab[0] * x % P + b) % P) % k;
+            return 0;
         }
 
     public:
@@ -128,7 +129,6 @@ void tryUpdateQueryList(string &arg, string argName){
     }
 }
 
-
 stringstream getFileAsStream(string filename){
     ifstream f(filename);
     stringstream buffer;
@@ -183,7 +183,7 @@ void printvec(vector<int> &v){
 }
 
 int main(int args, char **argv){
-
+    cout << args << endl;
     for(int i = 1; i < args - 1; i++){
         argsQueue.push(argv[i]);
     }
