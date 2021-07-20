@@ -6,8 +6,7 @@ using namespace std;
 class KMV {
     private:
     ll k, m, R, a, b, P;
-    priority_queue<ll> min_vals;
-    unordered_set<ll> used_vals;
+    set<ll> min_vals;
 
     public:
     KMV(ll k, ll m) {
@@ -20,9 +19,8 @@ class KMV {
     }
 
     void minsert(ll num) {
-        if(!this->used_vals.count(num)) {
-            min_vals.push(num);
-            used_vals.insert(num);
+        if(!this->min_vals.count(num)) {
+            this->min_vals.insert(num);
         }
     }
 
@@ -34,9 +32,8 @@ class KMV {
         ll hashed_num = this->hash(num);
         minsert(hashed_num);
         if(this->min_vals.size() > k) {
-            ll largest = min_vals.top();
-            min_vals.pop();
-            used_vals.erase(largest);
+            ll largest = *(this->min_vals).rbegin();
+            min_vals.erase(largest);
         }
     }
 
@@ -45,11 +42,13 @@ class KMV {
             return this->min_vals.size();
         }
 
+        ll largest = *(this->min_vals).rbegin();
+
         cout << "r: " << this->R << endl;
         cout << "k: " << this->k << endl;
-        cout << "windowSize: " << this->min_vals.top() << endl;
+        cout << "windowSize: " << largest << endl;
 
-        return ((double)this->R * (double)this->k) / (double)(this->min_vals.top());
+        return ((double)this->R * (double)this->k) / (double)largest;
     }
 };
 
