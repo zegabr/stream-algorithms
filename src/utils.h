@@ -8,9 +8,12 @@
 #include <queue>
 #include <vector>
 #include <climits>
+#include<chrono>
+#include<random>
 
 using namespace std;
 
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 class Utils{
     // TODO: separar isso em mais arquivos?
     private:
@@ -29,12 +32,23 @@ class Utils{
             return rand() % (r-l+1) + l;   
         }
 
+        // Random number in interval
+        inline long long  random_longlong(long long  i, long long  j){
+            return uniform_int_distribution<long long >(i, j)(rng);
+        }
+
         /**
          * Returns a pair (a,b) to be using in the hash function h(x) = ax+b
          */
         vector<int> getNewHashFunction(int P){
             int a = randint(0, P-1); // TODO: trocar isso pra randint(1, P-1)? pra que h(x) = ax+b nao degenere pra h(x) = b ??
-            int b = randint(0, P-1);
+            int  b = randint(0, P-1);
+            return {a,b};
+        }
+
+        vector<long long> getNewHashFunction(long long P){
+            long long a = random_longlong(0, P-1); // TODO: trocar isso pra randint(1, P-1)? pra que h(x) = ax+b nao degenere pra h(x) = b ??
+            long long b = random_longlong(0, P-1);
             return {a,b};
         }
 
@@ -169,9 +183,9 @@ class Utils{
         }
 
     public: // csv utilities
-    void loadFileAsStream(string &filename, int columnId, int weightColumnId){
-        // TODO: carregar isso num campo global (private) do Utils, pra que consiga chamar algo tipo utils.getNextEntry
-    }
+        void loadFileAsStream(string &filename, int columnId, int weightColumnId){
+            // TODO: carregar isso num campo global (private) do Utils, pra que consiga chamar algo tipo utils.getNextEntry
+        }
 
     public: // debug utilities
         void printvec(vector<int> &v){

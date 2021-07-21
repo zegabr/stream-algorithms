@@ -26,7 +26,6 @@ class CountMinSketch{
             for(int i = 0; i < t; i++){
                 hashFunctions.push_back(utils.getNewHashFunction(P));
             }
-            cout << endl;
             C.assign(t, vector<int>(k,0)); // C matrix (t x k)
         }
 
