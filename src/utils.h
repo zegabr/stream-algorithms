@@ -8,12 +8,14 @@
 #include <queue>
 #include <vector>
 #include <climits>
+#include <fstream>
 #include<chrono>
 #include<random>
 
 using namespace std;
 
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+
 class Utils{
     // TODO: separar isso em mais arquivos?
     private:
@@ -42,12 +44,12 @@ class Utils{
          */
         vector<int> getNewHashFunction(int P){
             int a = randint(0, P-1); // TODO: trocar isso pra randint(1, P-1)? pra que h(x) = ax+b nao degenere pra h(x) = b ??
-            int  b = randint(0, P-1);
+            int b = randint(0, P-1);
             return {a,b};
         }
 
         vector<long long> getNewHashFunction(long long P){
-            long long a = random_longlong(0, P-1); // TODO: trocar isso pra randint(1, P-1)? pra que h(x) = ax+b nao degenere pra h(x) = b ??
+            long long a = random_longlong(0, P-1);
             long long b = random_longlong(0, P-1);
             return {a,b};
         }
@@ -182,17 +184,52 @@ class Utils{
             return buffer;
         }
 
-    public: // csv utilities
-        void loadFileAsStream(string &filename, int columnId, int weightColumnId){
-            // TODO: carregar isso num campo global (private) do Utils, pra que consiga chamar algo tipo utils.getNextEntry
-        }
-
     public: // debug utilities
-        void printvec(vector<int> &v){
+        template<typename T>
+        void printvec(vector<T> &v){
             for(int i = 0; i < (int)v.size(); i++){
                 cout << v[i] << " \n"[i==v.size()-1];
             }
         }
 };
 
+class CSVReader{
+    private:
+        ifstream fileInput;
+        int idColumn;
+        int weightColumn;
+    public:
+        CSVReader(string &filename, int idCol, int weightCol){
+            fileInput.open(filename);
+            idColumn = idCol;
+            weightColumn = weightCol;
+        }
+
+        CSVReader(string &filename, int idCol){// pra tu @gabi
+            fileInput.open(filename);
+            idColumn = idCol;
+        }
+
+        bool hasNext(){
+            return !fileInput.eof();
+        }
+
+        vector<int> getNextValueAndWeight(){
+            string word;
+            vector<string> row;
+            while( getline(fileInput , word, ',') ){
+                row.push_back(word);
+            }
+            return {stoi(row[idColumn]), stoi(row[weightColumn])};
+        }
+
+        int getNextValue(){// pra tu @gabi
+            string word;
+            vector<string> row;
+            while( getline(fileInput , word, ',') ){
+                row.push_back(word);
+            }
+            return stoi(row[idColumn]);
+        }
+};
 #endif
