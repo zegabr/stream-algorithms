@@ -4,10 +4,9 @@ using namespace std;
 
 Utils utils; // global utility functions
 
-
 class CountMinSketch{
     private:
-        long long P = (1ll << 61) - 1;
+        long long P = INT_MAX;
         int t, k;
         vector<vector<long long>> hashFunctions;
         vector<vector<int>> C;
@@ -92,7 +91,6 @@ int main(int args, char **argv){
     cout << "dataset filename = " << datasetFilename << '\n';
 
     CountMinSketch sketch(eps, delta);
-
     CSVReader reader(datasetFilename, id, weight);
 
     while(reader.hasNext()){
