@@ -1,38 +1,40 @@
 #include<bits/stdc++.h>
-#define ll unsigned long
+#include "utils.h"
 
 using namespace std;
 
+Utils utils; // global utility functions
+
 class KMV {
     private:
-    ll k, m, R, a, b, P;
-    set<ll> min_vals;
+    long long k, m, R, a, b, P;
+    set<long long> min_vals;
 
     public:
-    KMV(ll k, ll m) {
-        this->k = k;
+    KMV(long long m, double error_bound, double error_prob) {
         this->m = m;
-        this->R = pow(m,3);
-        this->a = (1UL<<61) -1;
-        this->b = 563;
-        this->P = (1UL<<63);
+
+        this->R = (1LL<<61)-1;
+        this->P = (1LL<<61)-1;
+        long long k1 = 84 / (pow(error_bound, 2));
+        long long k2 = (4*m) / (error_bound * this->R);
+        this->k = max(k1,k2);
+
+        vector<long long> hashValues = utils.getNewHashFunction(P);
+        this->a = hashValues[0], this->b = hashValues[1];
     }
 
-    void minsert(ll num) {
+    void minsert(long long num) {
         if(!this->min_vals.count(num)) {
             this->min_vals.insert(num);
         }
     }
 
-    ll hash(ll num) {
-        return ((this->a * num) % P) % R;
-    }
-
-    void update(ll num) {
-        ll hashed_num = this->hash(num);
+    void update(long long num) {
+        long long hashed_num = utils.hash(num, this->a, this->b, this->P, this->R);
         minsert(hashed_num);
         if(this->min_vals.size() > k) {
-            ll largest = *(this->min_vals).rbegin();
+            long long largest = *(this->min_vals).rbegin();
             min_vals.erase(largest);
         }
     }
@@ -42,30 +44,36 @@ class KMV {
             return this->min_vals.size();
         }
 
-        ll largest = *(this->min_vals).rbegin();
-
-        cout << "r: " << this->R << endl;
-        cout << "k: " << this->k << endl;
-        cout << "windowSize: " << largest << endl;
-
+        long long largest = *(this->min_vals).rbegin();
         return ((double)this->R * (double)this->k) / (double)largest;
     }
 };
 
 int main() {
     srand( (unsigned)time(NULL) );
-    ll m = 1000, n = 1000, k = 50;
-    KMV *sketch = new KMV(k,m);
+    long long m = 1000000, n = 1000000;
+    double error_bound = 0.5, error_prob = 0.5;
+    vector<double> answers;
 
-    set<ll> unique_vals;
+    vector<long long> vals;
+    set<long long> unique_vals;
 
-    for(ll i = 0; i < n; i++) {
-        ll num = rand() % (m);
-        unique_vals.insert(num);
-        sketch->update(num);
+    for(long long i = 0; i < n; i++) {
+        vals.push_back(rand() % (m));
+        unique_vals.insert(vals.back());
     }
 
-    double ans = sketch->query();
+    long long times = 4 * log(1/error_prob);
+    for(int i = 0; i < times; i++) {
+        KMV *sketch = new KMV(m, error_bound, error_prob);
+        for(auto num : vals) {
+            sketch->update(num);
+        }
+        answers.push_back(sketch->query());
+    }
+
+    sort(answers.begin(), answers.end());
+    double ans = answers[answers.size()/2];
     cout << "estimate --> " << ans << endl;
     cout << "real --> " << unique_vals.size() << endl;
 }

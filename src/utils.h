@@ -52,6 +52,10 @@ class Utils{
             return {a,b};
         }
 
+        long long hash(long long x, long long a, long long b, long long P, long long k) {
+            return (((((a * x) % P + b) % P) + P) % P) % k;
+        }
+
     public: // args processor
         void updateArgsCountMin(
                 set<string> &possibleOptions, 
