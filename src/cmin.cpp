@@ -6,9 +6,10 @@ Utils utils; // global utility functions
 
 class CountMinSketch{
     private:
-        int P = INT_MAX; // mersenne prime => 2 ^31 - 1
+        long long P = INT_MAX;
         int t, k;
-        vector<vector<int>> hashFunctions, C;
+        vector<vector<long long>> hashFunctions;
+        vector<vector<int>> C;
 
         /**
          * Returns the i-th hashed position of x
@@ -57,6 +58,7 @@ int main(int args, char **argv){
         "--query",
         "--qryfile"
     };
+
     int id = 0; // default column to be used as id
     int weight = 4; // default column to be used as weights
     double eps = 0.1; // default error bound
@@ -88,15 +90,17 @@ int main(int args, char **argv){
     cout << "queries="; utils.printvec(queryIds);
     cout << "dataset filename = " << datasetFilename << '\n';
 
-    utils.loadFileAsStream(datasetFilename, id, weight);
     CountMinSketch sketch(eps, delta);
+    CSVReader reader(datasetFilename, id, weight);
 
-
-    // TODO: ler x e w do dataset seguindo as informacoes nos parametros
+    while(reader.hasNext()){
+        vector<int> idAndWeight = reader.getNextValueAndWeight();
+        int x = idAndWeight[0];
+        int w = idAndWeight[1];
+        sketch.update(x,w);
+    }
 
     for(int q : queryIds){
-
-        cout << "pegando um" << endl;
         cout << sketch.query(q) << ' ';
     }
     cout << '\n';
