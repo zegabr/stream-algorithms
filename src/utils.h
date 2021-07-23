@@ -9,8 +9,8 @@
 #include <vector>
 #include <climits>
 #include <fstream>
-#include<chrono>
-#include<random>
+#include <chrono>
+#include <random>
 
 using namespace std;
 
@@ -186,11 +186,11 @@ class Utils{
 
     public: // debug utilities
         template<typename T>
-        void printvec(vector<T> &v){
-            for(int i = 0; i < (int)v.size(); i++){
-                cout << v[i] << " \n"[i==v.size()-1];
+            void printvec(vector<T> &v){
+                for(int i = 0; i < (int)v.size(); i++){
+                    cout << v[i] << " \n"[i==v.size()-1];
+                }
             }
-        }
 };
 
 class CSVReader{
@@ -198,38 +198,61 @@ class CSVReader{
         ifstream fileInput;
         int idColumn;
         int weightColumn;
+
+        void replaceCommasWithSpaces(string &line){
+            for(char &c : line){
+                if(c == ',') c = ' ';
+            }
+        }
+
+        void updateRowVector(vector<string> &row, string &line){
+            string word;
+            replaceCommasWithSpaces(line);
+            stringstream ss(line);
+            while(ss >> word){
+                row.push_back(word);
+            }
+        }
+
     public:
         CSVReader(string &filename, int idCol, int weightCol){
             fileInput.open(filename);
             idColumn = idCol;
             weightColumn = weightCol;
+            ignoreFirstLine();
         }
 
         CSVReader(string &filename, int idCol){// pra tu @gabi
             fileInput.open(filename);
             idColumn = idCol;
+            ignoreFirstLine();
         }
 
         bool hasNext(){
-            return !fileInput.eof();
+            return fileInput.peek() != EOF;
         }
 
         vector<int> getNextValueAndWeight(){
-            string word;
+            string line;
             vector<string> row;
-            while( getline(fileInput , word, ',') ){
-                row.push_back(word);
-            }
+
+            getline(fileInput, line);
+            updateRowVector(row, line); // TODO: refatorar isso pra ao inves de pegar o vector inteiro, só pegar as vairaveis q a gt quer
             return {stoi(row[idColumn]), stoi(row[weightColumn])};
         }
 
         int getNextValue(){// pra tu @gabi
-            string word;
+            string line;
             vector<string> row;
-            while( getline(fileInput , word, ',') ){
-                row.push_back(word);
-            }
+
+            getline(fileInput, line);
+            updateRowVector(row, line); // TODO: refatorar isso pra ao inves de pegar o vector inteiro, só pegar as vairaveis q a gt quer
             return stoi(row[idColumn]);
+        }
+
+        void ignoreFirstLine(){
+            string firstLine;
+            getline(fileInput, firstLine);
         }
 };
 #endif
