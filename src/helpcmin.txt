@@ -1,8 +1,8 @@
-O algoritmo Count Min é usado para estimar a para estimar pontualmente os “pesos totais” de fluxos, usando um campo
-w indicado como peso. O sketch e suposto fornecer  ́(e, δ)-aproximações Ŵx dos pesos totais Wx de
+O algoritmo Count Min é usado para estimar pontualmente os “pesos totais” de fluxos, usando um campo
+w indicado como peso. O sketch e suposto fornecer ́(e, δ)-aproximações Ŵx dos pesos totais Wx de
 cada fluxo x, isto é, ́
 
-P[Ŵx − Wx ≥ eW] ≤ δ,
+P[|Ŵx − Wx| ≥ eW] ≤ δ,
 
 onde W representa a soma de todos os pesos dos fluxos da entrada.
 

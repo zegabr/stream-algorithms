@@ -51,11 +51,16 @@ class CountMinSketch{
             }
             return estimated_weight;
         }
+
+        int getT(){return t;}
+        int getK(){return k;}
 };
 
 void runTests(double eps, double delta, int id, int weight, string &datasetFilename, vector<long long> &queryIds, vector<string> &queriesOriginalIds){
     clock_t begin = clock();
     CountMinSketch sketch(eps, delta);
+    int t = sketch.getT();
+    int k = sketch.getK();
     CSVReader reader(datasetFilename, id, weight);
 
     map<long long, long> freq;
@@ -90,6 +95,8 @@ void runTests(double eps, double delta, int id, int weight, string &datasetFilen
         << eps << ',' 
         << delta << ','
         << W << ','
+        << t << ','
+        << k << ','
         << elapsed_secs << '\n';
     }
     // cout.flush();
@@ -115,10 +122,10 @@ int main(int args, char **argv){
     //     queryIds.push_back(hasher.getUniqueHash(qid));
     // }
 
-    queryIds = {10};
-    queriesOriginalIds = {"10"};
+    queryIds = {1,2,3,4,5};
+    queriesOriginalIds = {"1", "2", "3", "4", "5"};
 
-    cout << "ID,ESTIMATIVA,RESPOSTA,ERRO,ERRO_ACEITAVEL,ERRO < ERRO_ACEITAVEL,EPS,DELTA,SOMA_PESOS,TIME" << '\n';
+    cout << "ID,ESTIMATIVA,RESPOSTA,ERRO,ERRO_ACEITAVEL,ERRO < ERRO_ACEITAVEL,EPS,DELTA,SOMA_PESOS,T,K,TIME" << '\n';
     for(double eps : epss){
         for(double delta : deltas){
             for(int id : idColumn){
