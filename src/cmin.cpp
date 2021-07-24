@@ -1,11 +1,10 @@
-#include "utils.h"
 #include "hasher.h"
 #include "args.h"
 #include "csv.h"
+#include <climits>
 
 using namespace std;
 
-Utils utils; // global utility functions
 
 class CountMinSketch{
     private:
@@ -42,15 +41,14 @@ class CountMinSketch{
         }
 
         int query(int x){
-            int estimated_weigth = INT_MAX;
+            int estimated_weight = INT_MAX;
             for(int i = 0; i < t; i++){
                 int j = getHash(i, x);
-                estimated_weigth = min(estimated_weigth, C[i][j]);
+                estimated_weight = min(estimated_weight, C[i][j]);
             }
-            return estimated_weigth;
+            return estimated_weight;
         }
 };
-
 
 int main(int args, char **argv){
 
@@ -87,13 +85,13 @@ int main(int args, char **argv){
             queryIds
             );
 
-    cout << "using: " << '\n';
-    cout << "id=" << id << '\n';
-    cout << "weight=" << weight << '\n';
-    cout << "eps=" << eps << '\n';
-    cout << "delta=" << delta << '\n';
-    cout << "queries="; utils.printvec(queryIds);
-    cout << "dataset filename = " << datasetFilename << '\n';
+    //cout << "using: " << '\n';
+    //cout << "id=" << id << '\n';
+    //cout << "weight=" << weight << '\n';
+    //cout << "eps=" << eps << '\n';
+    //cout << "delta=" << delta << '\n';
+    //cout << "queries="; utils.printvec(queryIds);
+    //cout << "dataset filename = " << datasetFilename << '\n';
 
     CountMinSketch sketch(eps, delta);
     CSVReader reader(datasetFilename, id, weight);
