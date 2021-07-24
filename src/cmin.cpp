@@ -1,4 +1,7 @@
 #include "utils.h"
+#include "hasher.h"
+#include "args.h"
+#include "csv.h"
 
 using namespace std;
 
@@ -6,6 +9,7 @@ Utils utils; // global utility functions
 
 class CountMinSketch{
     private:
+        Hasher hasher;
         long long P = (1LL << 61) - 1;
         int t, k;
         vector<vector<long long>> hashFunctions;
@@ -17,7 +21,7 @@ class CountMinSketch{
         int getHash(int i, int x){
             long long a = hashFunctions[i][0];
             long long b = hashFunctions[i][1];
-            return utils.hashCountMin(x,a,b,P,k);
+            return hasher.hashCountMin(x,a,b,P,k);
         }
 
     public:
@@ -25,7 +29,7 @@ class CountMinSketch{
             k = int(2.0/eps);
             t = ceil(log(1.0/delta));
             for(int i = 0; i < t; i++){
-                hashFunctions.push_back(utils.getNewHashFunction(P));
+                hashFunctions.push_back(hasher.getNewHashFunction(P));
             }
             C.assign(t, vector<int>(k,0)); // C matrix (t x k)
         }
@@ -72,7 +76,8 @@ int main(int args, char **argv){
 
     string datasetFilename = argv[args - 1]; // csv filename
 
-    utils.updateArgsCountMin(
+    ArgsReader argsProcesser;
+    argsProcesser.updateArgsCountMin(
             possibleOptions, 
             argsQueue, 
             id, 
@@ -94,9 +99,9 @@ int main(int args, char **argv){
     CSVReader reader(datasetFilename, id, weight);
 
     while(reader.hasNext()){
-        vector<int> idAndWeight = reader.getNextValueAndWeight();
-        int x = idAndWeight[0];
-        int w = idAndWeight[1];
+        vector<long long> idAndWeight = reader.getNextValueAndWeight();
+        long long x = idAndWeight[0];
+        long long w = idAndWeight[1];
         sketch.update(x,w);
     }
 
