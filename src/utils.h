@@ -213,11 +213,30 @@ class Utils{
             }
 };
 
+class Hasher{
+    private:
+        static const long long base = 137;//cover all ascii values
+        const long long P = (1LL << 61) - 1;
+
+        void addChar(long long &hash, char &c){//add char to cumulative hash
+            hash = (hash * base % P + c) % P;
+        }
+    public: 
+
+        // rabin karp
+        long long getUniqueHash(string &s){
+            long long hash = 0;
+            for(char c : s) addChar(hash, c);
+            return hash;
+        }
+};
+
 class CSVReader{
     private:
         ifstream fileInput;
         int idColumn;
         int weightColumn;
+        Hasher hasher;
 
         void replaceCommasWithSpaces(string &line){
             for(char &c : line){
@@ -252,13 +271,13 @@ class CSVReader{
             return fileInput.peek() != EOF;
         }
 
-        vector<int> getNextValueAndWeight(){
+        vector<long long> getNextValueAndWeight(){
             string line;
             vector<string> row;
 
             getline(fileInput, line);
             updateRowVector(row, line);
-            return {stoi(row[idColumn]), stoi(row[weightColumn])};
+            return {hasher.getUniqueHash(row[idColumn]), stoi(row[weightColumn])};
         }
 
         int getNextValue(){
@@ -267,7 +286,7 @@ class CSVReader{
 
             getline(fileInput, line);
             updateRowVector(row, line);
-            return stoi(row[idColumn]);
+            return hasher.getUniqueHash(row[idColumn]);
         }
 
         void ignoreFirstLine(){
