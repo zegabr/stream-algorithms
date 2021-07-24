@@ -7,18 +7,13 @@ Utils utils; // global utility functions
 
 class KMV {
     private:
-    long long k, m, R, a, b, P;
+    long long k, m, a, b, P;
     set<long long> min_vals;
 
     public:
-    KMV(long long m, double error_bound, double error_prob) {
-        this->m = m;
-
-        this->R = (1LL<<61)-1;
+    KMV(double error_bound) {
         this->P = (1LL<<61)-1;
-        long long k1 = 84 / (pow(error_bound, 2));
-        long long k2 = (4*m) / (error_bound * this->R);
-        this->k = max(k1,k2);
+        this->k = 84 / (pow(error_bound, 2)); // chosen delta was 1/3
 
         vector<long long> hashValues = utils.getNewHashFunction(P);
         this->a = hashValues[0], this->b = hashValues[1];
@@ -30,8 +25,12 @@ class KMV {
         }
     }
 
+    long long hash(long long num) {
+        return (utils.multiply(num,a,P) + b) % P;
+    }
+
     void update(long long num) {
-        long long hashed_num = utils.hash(num, this->a, this->b, this->P, this->R);
+        long long hashed_num = hash(num);
         minsert(hashed_num);
         if(this->min_vals.size() > k) {
             long long largest = *(this->min_vals).rbegin();
@@ -45,35 +44,67 @@ class KMV {
         }
 
         long long largest = *(this->min_vals).rbegin();
-        return ((double)this->R * (double)this->k) / (double)largest;
+        return ((double)this->P * (double)this->k) / (double)largest;
     }
 };
 
-int main() {
-    srand( (unsigned)time(NULL) );
-    long long m = 1000000, n = 1000000;
-    double error_bound = 0.5, error_prob = 0.5;
-    vector<double> answers;
+long long getNumSketches(double delta) {
+    return 4 * log(1/delta);
+}
 
-    vector<long long> vals;
-    set<long long> unique_vals;
+int main(int args, char **argv) {
+    set<string> possibleOptions = {
+        "--target",
+        "--eps",
+        "--delta"
+    };
 
-    for(long long i = 0; i < n; i++) {
-        vals.push_back(rand() % (m));
-        unique_vals.insert(vals.back());
+    // default values
+    int target = 0;
+    double eps = 0.05;
+    double delta = 0.01;
+
+    // get arguments
+    queue<string> argsQueue;
+    for(int i = 1; i < args - 1; i++){
+        argsQueue.push(argv[i]);
     }
 
-    long long times = 4 * log(1/error_prob);
-    for(int i = 0; i < times; i++) {
-        KMV *sketch = new KMV(m, error_bound, error_prob);
-        for(auto num : vals) {
-            sketch->update(num);
+    string filename = argv[args - 1];
+
+    // update argument variables
+    utils.updateArgsKMV(possibleOptions, argsQueue, target, eps, delta);
+
+    // DEBUG #####################################
+    cout << "TARGET: " << target << endl;
+    cout << "EPS: " << eps << endl;
+    cout << "DELTA: " << delta << endl;
+
+    long long numSketches = getNumSketches(delta);
+    vector<long long> sketchResults;
+    set<long long> qtd;
+
+    for(int i = 0; i < numSketches; i++) {
+        CSVReader reader(filename, target);
+        KMV *sketch = new KMV(eps);
+
+        while(reader.hasNext()){
+            long long value = reader.getNextValue();
+            qtd.insert(value);
+            sketch->update(value);
         }
-        answers.push_back(sketch->query());
+
+        cout << "RESPOSTA: " << qtd.size() << endl;
+        sketchResults.push_back(sketch->query());
     }
 
-    sort(answers.begin(), answers.end());
-    double ans = answers[answers.size()/2];
-    cout << "estimate --> " << ans << endl;
-    cout << "real --> " << unique_vals.size() << endl;
+    sort(sketchResults.begin(), sketchResults.end());
+
+    long long answer;
+    if(numSketches % 2) 
+        answer = (sketchResults[numSketches/2-1] + sketchResults[numSketches/2]) / 2;
+    else
+        answer = sketchResults[numSketches/2];
+
+    cout << "ANSWER: " << answer << endl;
 }

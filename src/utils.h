@@ -39,6 +39,19 @@ class Utils{
             return uniform_int_distribution<long long >(i, j)(rng);
         }
 
+        // This was copied from a competitive programming lib
+        // it is useful to avoid overflow when multiplying
+        long long multiply(long long a, long long b, long long mod) {
+            long long res = 0;
+            while (b > 0) {
+                if (b & 1)
+                    res = (res + a) % mod ;
+                a = (a + a) % mod;
+                b >>= 1;
+            }
+            return res;
+        }
+
         /**
          * Returns a pair (a,b) to be using in the hash function h(x) = ax+b
          */
@@ -83,7 +96,7 @@ class Utils{
             }
         }
 
-        void updateArgsKMV(// TODO: @gabi usar soh usar isso aqui do jeito q eu usei o de cima :eyes: (dps apaga esse comment)
+        void updateArgsKMV(
                 set<string> &possibleOptions, 
                 queue<string> &argsQueue, 
                 int &target, 
@@ -226,7 +239,7 @@ class CSVReader{
             ignoreFirstLine();
         }
 
-        CSVReader(string &filename, int idCol){// pra tu @gabi
+        CSVReader(string &filename, int idCol){
             fileInput.open(filename);
             idColumn = idCol;
             ignoreFirstLine();
@@ -245,7 +258,7 @@ class CSVReader{
             return {stoi(row[idColumn]), stoi(row[weightColumn])};
         }
 
-        int getNextValue(){// pra tu @gabi
+        int getNextValue(){
             string line;
             vector<string> row;
 

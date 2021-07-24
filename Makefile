@@ -12,6 +12,8 @@ build-cmin:
 	g++ $(CPP_FLAGS) $(COUNT_MIN_PATH) -o $(COUNT_MIN_BIN_PATH)
 
 build-kmv:
+	mkdir ./bin ; \
+	touch ./bin/kmv ; \
 	g++ $(CPP_FLAGS) $(KMV_PATH) -o $(KMV_BIN_PATH)
 
 build-cmin-debug:
@@ -23,6 +25,3 @@ build-kmv-debug:
 build:
 	make build-cmin
 	make build-kmv
-
-	
-			
