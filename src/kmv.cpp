@@ -75,14 +75,8 @@ int main(int args, char **argv) {
     // update argument variables
     utils.updateArgsKMV(possibleOptions, argsQueue, target, eps, delta);
 
-    // DEBUG #####################################
-    cout << "TARGET: " << target << endl;
-    cout << "EPS: " << eps << endl;
-    cout << "DELTA: " << delta << endl;
-
     long long numSketches = getNumSketches(delta);
     vector<long long> sketchResults;
-    set<long long> qtd;
 
     for(int i = 0; i < numSketches; i++) {
         CSVReader reader(filename, target);
@@ -90,11 +84,9 @@ int main(int args, char **argv) {
 
         while(reader.hasNext()){
             long long value = reader.getNextValue();
-            qtd.insert(value);
             sketch->update(value);
         }
 
-        cout << "RESPOSTA: " << qtd.size() << endl;
         sketchResults.push_back(sketch->query());
     }
 
@@ -106,5 +98,5 @@ int main(int args, char **argv) {
     else
         answer = sketchResults[numSketches/2];
 
-    cout << "ANSWER: " << answer << endl;
+    cout << "prediction: " << answer << endl;
 }

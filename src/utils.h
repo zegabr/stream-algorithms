@@ -217,9 +217,10 @@ class Hasher{
     private:
         static const long long base = 137;//cover all ascii values
         const long long P = (1LL << 61) - 1;
+        Utils utils;
 
         void addChar(long long &hash, char &c){//add char to cumulative hash
-            hash = (hash * base % P + c) % P;
+            hash = (utils.multiply(hash,base,P) + c) % P;
         }
     public: 
 
@@ -280,7 +281,7 @@ class CSVReader{
             return {hasher.getUniqueHash(row[idColumn]), stoi(row[weightColumn])};
         }
 
-        int getNextValue(){
+        long long getNextValue(){
             string line;
             vector<string> row;
 
