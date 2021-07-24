@@ -5,9 +5,11 @@
 
 using namespace std;
 
+ArgsReader argsReader;
+Hasher hasher;
+
 class CountMinSketch{
     private:
-        Hasher hasher;
         long long P = (1LL << 61) - 1;
         int t, k;
         vector<vector<long long>> hashFunctions;
@@ -53,10 +55,10 @@ class CountMinSketch{
 
 int main(int args, char **argv){
     ios::sync_with_stdio(0); cin.tie(0);
-    
+        
+    argsReader.checkHelpOption(args, argv, "./src/helpcmin.txt"); 
+
     set<string> possibleOptions = {
-        "-h",
-        "--help",
         "--id",
         "--weight",
         "--eps",
@@ -67,7 +69,7 @@ int main(int args, char **argv){
 
     int idColumn = 0;
     int weightColumn = 4;
-    double eps = 0.05;
+    double eps = 0.1;
     double delta = 0.05;
     vector<long long> queryIds;
     vector<string> queryOriginalIds;
@@ -79,7 +81,7 @@ int main(int args, char **argv){
 
     string datasetFilename = argv[args - 1]; // csv filename
 
-    ArgsReader argsReader;
+    
     argsReader.updateArgsCountMin(
             possibleOptions, 
             argsQueue, 

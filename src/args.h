@@ -30,7 +30,7 @@ class ArgsReader{
             while(argsQueue.size() > 0){
                 string arg = argsQueue.front();
                 argsQueue.pop();
-                // TODO: add -h and --help
+
                 checkArg(possibleOptions, arg);
                 tryUpdateArg(possibleOptions, argsQueue, arg, "--id", id);
                 tryUpdateArg(possibleOptions, argsQueue, arg, "--weight", weight);
@@ -38,6 +38,22 @@ class ArgsReader{
                 tryUpdateArg(possibleOptions, argsQueue, arg, "--delta", delta);
                 tryUpdateQueryList(possibleOptions, argsQueue, arg, "--query", queryIds, queryOriginalIds);
                 tryUpdateQueryListByFile(possibleOptions, argsQueue, arg, "--qryfile", queryIds, queryOriginalIds);
+            }
+        }
+
+        void checkHelpOption(int args, char **argv, string filename){
+            if(args <= 2){
+                string arg = argv[1];
+                if(arg == "-h" or arg == "--help"){
+                    ifstream f(filename);
+                    stringstream buffer;
+                    buffer << f.rdbuf();
+                    cout << buffer.str() << endl;
+                    exit(0);
+                }else{
+                    cerr << "error" << endl;
+                    exit(1);
+                }
             }
         }
 
@@ -53,7 +69,7 @@ class ArgsReader{
             while(argsQueue.size() > 0){
                 string arg = argsQueue.front();
                 argsQueue.pop();
-                // TODO: add -h and --help
+
                 checkArg(possibleOptions, arg);
                 tryUpdateArg(possibleOptions, argsQueue, arg, "--target", target);
                 tryUpdateArg(possibleOptions, argsQueue, arg, "--eps", eps);

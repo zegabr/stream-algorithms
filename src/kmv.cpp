@@ -56,6 +56,8 @@ long long getNumSketches(double delta) {
 }
 
 int main(int args, char **argv) {
+
+    argsReader.checkHelpOption(args, argv, "./src/helpkmv.txt"); 
     set<string> possibleOptions = {
         "--target",
         "--eps",
