@@ -23,7 +23,8 @@ class ArgsReader{
                 int &weight, 
                 double &eps, 
                 double &delta, 
-                vector<long long> &queryIds
+                vector<long long> &queryIds,
+                vector<string> &queryOriginalIds
                 )
         {
             while(argsQueue.size() > 0){
@@ -35,8 +36,8 @@ class ArgsReader{
                 tryUpdateArg(possibleOptions, argsQueue, arg, "--weight", weight);
                 tryUpdateArg(possibleOptions, argsQueue, arg, "--eps", eps);
                 tryUpdateArg(possibleOptions, argsQueue, arg, "--delta", delta);
-                tryUpdateQueryList(possibleOptions, argsQueue, arg, "--query", queryIds);
-                tryUpdateQueryListByFile(possibleOptions, argsQueue, arg, "--qryfile", queryIds);
+                tryUpdateQueryList(possibleOptions, argsQueue, arg, "--query", queryIds, queryOriginalIds);
+                tryUpdateQueryListByFile(possibleOptions, argsQueue, arg, "--qryfile", queryIds, queryOriginalIds);
             }
         }
 
@@ -101,7 +102,7 @@ class ArgsReader{
         }
 
         // Tries to update query list wtth next elements in argsQueue
-        void tryUpdateQueryList(set<string> &possibleOptions, queue<string> &argsQueue,string &arg, string argName, vector<long long> &queryIds){
+        void tryUpdateQueryList(set<string> &possibleOptions, queue<string> &argsQueue,string &arg, string argName, vector<long long> &queryIds, vector<string> &queryOriginalIds){
             if(arg == argName){
                 if(argsQueue.empty()){
                     missingArgumentValue(arg);
@@ -109,6 +110,7 @@ class ArgsReader{
                 queryIds.clear();
                 while(argsQueue.size() > 0 and !possibleOptions.count(argsQueue.front())){
                     queryIds.push_back(hasher.getUniqueHash(argsQueue.front()));
+                    queryOriginalIds.push_back(argsQueue.front());
                     argsQueue.pop();
                 }
                 if(queryIds.empty()){
@@ -118,7 +120,7 @@ class ArgsReader{
         }
 
         // Tries to update query list wtth text file
-        void tryUpdateQueryListByFile(set<string> &possibleOptions, queue<string> &argsQueue,string &arg, string argName, vector<long long> &queryIds){
+        void tryUpdateQueryListByFile(set<string> &possibleOptions, queue<string> &argsQueue,string &arg, string argName, vector<long long> &queryIds, vector<string> &queryOriginalIds){
             if(arg == argName){
                 if(argsQueue.empty()){
                     missingArgumentValue(arg);
@@ -132,6 +134,7 @@ class ArgsReader{
 
                     string qid;
                     while(ss >> qid){
+                        queryOriginalIds.push_back(qid);
                         queryIds.push_back(hasher.getUniqueHash(qid));
                     }
                 }
