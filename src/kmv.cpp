@@ -1,9 +1,12 @@
 #include<bits/stdc++.h>
-#include "utils.h"
+#include "hasher.h"
+#include "args.h"
+#include "csv.h"
 
 using namespace std;
 
-Utils utils; // global utility functions
+Hasher hasher;
+ArgsReader argsReader;
 
 class KMV {
     private:
@@ -15,7 +18,7 @@ class KMV {
         this->P = (1LL<<61)-1;
         this->k = 84 / (pow(error_bound, 2)); // chosen delta was 1/3
 
-        vector<long long> hashValues = utils.getNewHashFunction(P);
+        vector<long long> hashValues = hasher.getNewHashFunction(P);
         this->a = hashValues[0], this->b = hashValues[1];
     }
 
@@ -26,7 +29,7 @@ class KMV {
     }
 
     long long hash(long long num) {
-        return (utils.multiply(num,a,P) + b) % P;
+        return (hasher.multiply(num,a,P) + b) % P;
     }
 
     void update(long long num) {
@@ -73,7 +76,7 @@ int main(int args, char **argv) {
     string filename = argv[args - 1];
 
     // update argument variables
-    utils.updateArgsKMV(possibleOptions, argsQueue, target, eps, delta);
+    argsReader.updateArgsKMV(possibleOptions, argsQueue, target, eps, delta);
 
     long long numSketches = getNumSketches(delta);
     vector<long long> sketchResults;

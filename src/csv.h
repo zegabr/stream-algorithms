@@ -55,7 +55,7 @@ class CSVReader{
             return {hasher.getUniqueHash(row[idColumn]), stoi(row[weightColumn])};
         }
 
-        int getNextValue(){
+        long long getNextValue(){
             string line;
             vector<string> row;
 
