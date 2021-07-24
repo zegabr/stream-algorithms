@@ -39,6 +39,19 @@ class Utils{
             return uniform_int_distribution<long long >(i, j)(rng);
         }
 
+        // This was copied from a competitive programming lib
+        // it is useful to avoid overflow when multiplying
+        long long multiply(long long a, long long b, long long mod) {
+            long long res = 0;
+            while (b > 0) {
+                if (b & 1)
+                    res = (res + a) % mod ;
+                a = (a + a) % mod;
+                b >>= 1;
+            }
+            return res;
+        }
+
         /**
          * Returns a pair (a,b) to be using in the hash function h(x) = ax+b
          */
@@ -54,18 +67,8 @@ class Utils{
             return {a,b};
         }
 
-        long long modularMultiplication(long long a, long long b, long long P) {
-            long long res = 0;
-            while (b > 0) {
-                if (b & 1) res = (res + a) % P;
-                a = (a + a) % P;
-                b/=2;
-            }
-            return res;
-        }
-
         long long hashCountMin(long long x, long long a, long long b, long long P, long long k) {
-            long long ax = modularMultiplication(a,x,P);
+            long long ax = multiply(a,x,P);
             return ((ax + b) % P) % k;
         }
 
@@ -96,7 +99,7 @@ class Utils{
             }
         }
 
-        void updateArgsKMV(// TODO: @gabi usar soh usar isso aqui do jeito q eu usei o de cima :eyes: (dps apaga esse comment)
+        void updateArgsKMV(
                 set<string> &possibleOptions, 
                 queue<string> &argsQueue, 
                 int &target, 
