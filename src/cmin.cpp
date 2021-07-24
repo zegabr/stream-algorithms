@@ -2,6 +2,7 @@
 #include "args.h"
 #include "csv.h"
 #include <climits>
+#include <map>
 
 using namespace std;
 
@@ -32,9 +33,9 @@ class CountMinSketch{
             C.assign(t, vector<int>(k,0)); // C matrix (t x k)
         }
 
-        void update(int x, int w){
+        void update(long long x, long long w){
             for(int i = 0; i < t; i++){
-                int j = getHash(i, x);
+                long long j = getHash(i, x);
                 C[i][j] += w;
             }
         }
@@ -95,17 +96,30 @@ int main(int args, char **argv){
     CountMinSketch sketch(eps, delta);
     CSVReader reader(datasetFilename, id, weight);
 
+    Hasher hasher;
+    map<long long, long> freq;
     while(reader.hasNext()){
         vector<long long> idAndWeight = reader.getNextValueAndWeight();
         long long x = idAndWeight[0];
         long long w = idAndWeight[1];
         sketch.update(x,w);
+        freq[x] += w; // soma frequencia de x
     }
 
+    cout << "ESTIMATIVA" << endl;
     for(int q : queryIds){
         cout << sketch.query(q) << ' ';
     }
+    cout << endl;
+
+    cout << "RESPOSTA" << endl;
+    for(int q : queryIds){
+        string qs = to_string(q);
+        long long h = hasher.getUniqueHash(qs);
+        cout << freq[h] << ' ';
+    }
     cout << '\n';
+    cout << freq.size() << endl;
 
     return 0;
 }

@@ -10,45 +10,45 @@ ArgsReader argsReader;
 
 class KMV {
     private:
-    long long k, m, a, b, P;
-    set<long long> min_vals;
+        long long k, m, a, b, P;
+        set<long long> min_vals;
 
     public:
-    KMV(double error_bound) {
-        this->P = (1LL<<61)-1;
-        this->k = 84 / (pow(error_bound, 2)); // chosen delta was 1/3
+        KMV(double error_bound) {
+            this->P = (1LL<<61)-1;
+            this->k = 84 / (pow(error_bound, 2)); // chosen delta was 1/3
 
-        vector<long long> hashValues = hasher.getNewHashFunction(P);
-        this->a = hashValues[0], this->b = hashValues[1];
-    }
-
-    void minsert(long long num) {
-        if(!this->min_vals.count(num)) {
-            this->min_vals.insert(num);
+            vector<long long> hashValues = hasher.getNewHashFunction(P);
+            this->a = hashValues[0], this->b = hashValues[1];
         }
-    }
 
-    long long hash(long long num) {
-        return (hasher.multiply(num,a,P) + b) % P;
-    }
+        void minsert(long long num) {
+            if(!this->min_vals.count(num)) {
+                this->min_vals.insert(num);
+            }
+        }
 
-    void update(long long num) {
-        long long hashed_num = hash(num);
-        minsert(hashed_num);
-        if(this->min_vals.size() > k) {
+        long long hash(long long num) {
+            return (hasher.multiply(num,a,P) + b) % P;
+        }
+
+        void update(long long num) {
+            long long hashed_num = hash(num);
+            minsert(hashed_num);
+            if(this->min_vals.size() > k) {
+                long long largest = *(this->min_vals).rbegin();
+                min_vals.erase(largest);
+            }
+        }
+
+        double query() {
+            if(this->min_vals.size() < this->k) {
+                return this->min_vals.size();
+            }
+
             long long largest = *(this->min_vals).rbegin();
-            min_vals.erase(largest);
+            return ((double)this->P * (double)this->k) / (double)largest;
         }
-    }
-
-    double query() {
-        if(this->min_vals.size() < this->k) {
-            return this->min_vals.size();
-        }
-
-        long long largest = *(this->min_vals).rbegin();
-        return ((double)this->P * (double)this->k) / (double)largest;
-    }
 };
 
 long long getNumSketches(double delta) {

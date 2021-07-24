@@ -2,7 +2,6 @@
 #define CSV_READER 1
 
 #include <iostream>
-#include <sstream>
 #include <fstream>
 #include "hasher.h"
 
@@ -19,22 +18,16 @@ class CSVReader{
             }
         }
 
-        void updateRowVector(vector<string> &row, string &line){
-            string word;
-            replaceCommasWithSpaces(line);
-            stringstream ss(line);
-            while(ss >> word){
-                row.push_back(word);
-            }
-        }
-
         string getValueGivenPosition(string &line, int pos){
             string word;
-            replaceCommasWithSpaces(line);
-            stringstream ss(line);
-            ss >> word;
-            while(pos -- > 0){
-                ss >> word;
+            int currPos = 0;
+            for(char c : line){
+                if(c == ','){
+                    currPos++;
+                    if(currPos > pos) return word;
+                }else if(pos == currPos){
+                    word.push_back(c);
+                }
             }
             return word;
         }
@@ -62,8 +55,9 @@ class CSVReader{
             vector<string> row;
 
             getline(fileInput, line);
-            updateRowVector(row, line);
-            return {hasher.getUniqueHash(row[idColumn]), stoi(row[weightColumn])};
+            string idWord = getValueGivenPosition(line, idColumn);
+            string weightWord = getValueGivenPosition(line, weightColumn);
+            return {hasher.getUniqueHash(idWord), stoi(weightWord)};
         }
 
         long long getNextValue(){
@@ -71,8 +65,8 @@ class CSVReader{
             vector<string> row;
 
             getline(fileInput, line);
-            getValueGivenPosition(line, idColumn);
-            return hasher.getUniqueHash(row[idColumn]);
+            string word = getValueGivenPosition(line, idColumn);
+            return hasher.getUniqueHash(word);
         }
 
         void ignoreFirstLine(){
