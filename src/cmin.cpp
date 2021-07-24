@@ -5,7 +5,6 @@
 
 using namespace std;
 
-
 class CountMinSketch{
     private:
         Hasher hasher;
