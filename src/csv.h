@@ -28,6 +28,17 @@ class CSVReader{
             }
         }
 
+        string getValueGivenPosition(string &line, int pos){
+            string word;
+            replaceCommasWithSpaces(line);
+            stringstream ss(line);
+            ss >> word;
+            while(pos -- > 0){
+                ss >> word;
+            }
+            return word;
+        }
+
     public:
         CSVReader(string &filename, int idCol, int weightCol){
             fileInput.open(filename);
@@ -55,12 +66,12 @@ class CSVReader{
             return {hasher.getUniqueHash(row[idColumn]), stoi(row[weightColumn])};
         }
 
-        int getNextValue(){
+        long long getNextValue(){
             string line;
             vector<string> row;
 
             getline(fileInput, line);
-            updateRowVector(row, line);
+            getValueGivenPosition(line, idColumn);
             return hasher.getUniqueHash(row[idColumn]);
         }
 
