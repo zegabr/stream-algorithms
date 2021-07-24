@@ -54,9 +54,22 @@ class Utils{
             return {a,b};
         }
 
-        long long hash(long long x, long long a, long long b, long long P, long long k) {
-            return (((((a * x) % P + b) % P) + P) % P) % k;
+        long long modularMultiplication(long long a, long long b, long long P) {
+            long long res = 0;
+            while (b > 0) {
+                if (b & 1) res = (res + a) % P;
+                a = (a + a) % P;
+                b/=2;
+            }
+            return res;
         }
+
+        long long hashCountMin(long long x, long long a, long long b, long long P, long long k) {
+            long long ax = modularMultiplication(a,x,P);
+            return ((ax + b) % P) % k;
+        }
+
+        // @gabi faz teu hash aqui oh
 
     public: // args processor
         void updateArgsCountMin(
@@ -226,7 +239,7 @@ class CSVReader{
             ignoreFirstLine();
         }
 
-        CSVReader(string &filename, int idCol){// pra tu @gabi
+        CSVReader(string &filename, int idCol){
             fileInput.open(filename);
             idColumn = idCol;
             ignoreFirstLine();
@@ -241,16 +254,16 @@ class CSVReader{
             vector<string> row;
 
             getline(fileInput, line);
-            updateRowVector(row, line); // TODO: refatorar isso pra ao inves de pegar o vector inteiro, só pegar as vairaveis q a gt quer
+            updateRowVector(row, line);
             return {stoi(row[idColumn]), stoi(row[weightColumn])};
         }
 
-        int getNextValue(){// pra tu @gabi
+        int getNextValue(){
             string line;
             vector<string> row;
 
             getline(fileInput, line);
-            updateRowVector(row, line); // TODO: refatorar isso pra ao inves de pegar o vector inteiro, só pegar as vairaveis q a gt quer
+            updateRowVector(row, line);
             return stoi(row[idColumn]);
         }
 

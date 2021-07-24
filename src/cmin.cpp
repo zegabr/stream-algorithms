@@ -6,7 +6,7 @@ Utils utils; // global utility functions
 
 class CountMinSketch{
     private:
-        long long P = INT_MAX;
+        long long P = (1LL << 61) - 1;
         int t, k;
         vector<vector<long long>> hashFunctions;
         vector<vector<int>> C;
@@ -17,7 +17,7 @@ class CountMinSketch{
         int getHash(int i, int x){
             long long a = hashFunctions[i][0];
             long long b = hashFunctions[i][1];
-            return ((a * x % P + b) % P) % k;
+            return utils.hashCountMin(x,a,b,P,k);
         }
 
     public:
