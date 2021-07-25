@@ -3,7 +3,7 @@ O algoritmo KMV (K-Mininum Values) é usado para estimar a quantidade de valores
 Execução:
     kmv [options] input_file.csv
 
-Options:
+Opções:
     --target <int>: Especifica o número da coluna alvo (coluna ≥ 0) do arquivo de entrada cuja quantidade de valores únicos deve ser estimada. 
     default: 0
 
