@@ -1,14 +1,17 @@
 # stream-algorithms
-stream algorithms implementation for TAA course 2021.2
+   Implementaçõa de algoritmos de stream para a disciplina de Tópicos Avançados em Algoritmos 2020.2 
+
+## Autores:
+Gabriela Vilela Heimer (gvh) e José Gabriel Silva Pereira (jgsp2)
 
 
 # Como instalar:
-    Abra o terminal na root do projeto e rode `make install`. Este comando copiará os arquivos necessários para que seja possível rodar os algoritmos apenas com os comandos `cmin` e `kmv` (os comandos funcionarão de qualquer diretório).
+    Abra o terminal na pasta src/ do projeto e rode `make install`. Este comando copiará para dentro de /usr/bin os arquivos necessários para que seja possível rodar os algoritmos apenas com os comandos `cmin` e `kmv` (os comandos funcionarão de qualquer diretório).
 
 # Execução:
 
 ##Count Min:
-`cmin [options] input_file.csv`.
+    `cmin [options] input_file.csv`.
 
 Opções:
     
@@ -49,4 +52,4 @@ Opções:
     default: 0.01
 
 # Como desinstalar:
-Para desinstalar, basta voltar para a root do projeto e rodar `make uninstall`.
+Para desinstalar, basta voltar para a pasta src/ do projeto e rodar `make uninstall`.
