@@ -56,7 +56,7 @@ class CountMinSketch{
 int main(int args, char **argv){
     ios::sync_with_stdio(0); cin.tie(0);
         
-    argsReader.checkHelpOption(args, argv, "./src/helpcmin.txt"); 
+    argsReader.checkHelpOption(args, argv, "/usr/bin/helpcmin.txt"); 
 
     set<string> possibleOptions = {
         "--id",

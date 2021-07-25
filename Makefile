@@ -1,9 +1,15 @@
 CPP_FLAGS = -std=c++17 -O2
-CPP_EXTENDED_FLAGS = -std=c++17 -O2 -Wshadow -Wall -Wno-unused-result -g -fsanitize=address,undefined -D_GLIBCXX_DEBUG -Wno-unused-result -Wno-sign-compare -Wno-char-subscripts
-COUNT_MIN_PATH = ./src/cmin.cpp
-KMV_PATH = ./src/kmv.cpp
-COUNT_MIN_BIN_PATH = ./bin/cmin
-KMV_BIN_PATH = ./bin/kmv
+CURR_DIR = $(shell pwd)
+
+CMIN_SRC_PATH = $(CURR_DIR)/src/cmin.cpp
+KMV_SRC_PATH = $(CURR_DIR)/src/kmv.cpp
+
+CMIN_FULL_PATH = $(CURR_DIR)/bin/cmin
+KMV_FULL_PATH = $(CURR_DIR)/bin/kmv
+
+CMIN_HELP_PATH = $(CURR_DIR)/src/helpcmin.txt
+KMV_HELP_PATH = $(CURR_DIR)/src/helpkmv.txt
+
 
 .SILENT:
 default:
@@ -11,21 +17,26 @@ default:
 
 .SILENT:
 build-cmin:
-	g++ $(CPP_FLAGS) $(COUNT_MIN_PATH) -o $(COUNT_MIN_BIN_PATH)
+	g++ $(CPP_FLAGS) $(CMIN_SRC_PATH) -o $(CMIN_FULL_PATH)
 
 .SILENT:
 build-kmv:
-	mkdir ./bin ; \
-	touch ./bin/kmv ; \
-	g++ $(CPP_FLAGS) $(KMV_PATH) -o $(KMV_BIN_PATH)
+	g++ $(CPP_FLAGS) $(KMV_SRC_PATH) -o $(KMV_FULL_PATH)
 
-#TODO: remover do makefile os debugs e o extended flags
-build-cmin-debug:
-	g++ $(CPP_EXTENDED_FLAGS) $(COUNT_MIN_PATH) -o $(COUNT_MIN_BIN_PATH)	
-
-build-kmv-debug:
-	g++ $(CPP_EXTENDED_FLAGS) $(KMV_PATH) -o $(KMV_BIN_PATH)
-
+.SILENT:
 build:
-	make build-cmin
+	mkdir ./bin ; \
+	make build-cmin; \
 	make build-kmv
+
+install: build
+	sudo cp $(CMIN_FULL_PATH) /usr/bin/cmin; \
+	sudo cp $(KMV_FULL_PATH) /usr/bin/kmv; \
+	sudo cp $(CMIN_HELP_PATH) /usr/bin/helpcmin.txt; \
+	sudo cp $(KMV_HELP_PATH) /usr/bin/helpkmv.txt; \
+	
+uninstall:
+	sudo rm /usr/bin/cmin; \
+	sudo rm /usr/bin/kmv; \
+	sudo rm /usr/bin/helpcmin.txt; \
+	sudo rm /usr/bin/helpkmv.txt; \
