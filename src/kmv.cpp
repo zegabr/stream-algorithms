@@ -10,13 +10,13 @@ ArgsReader argsReader;
 
 class KMV {
     private:
-        long long k, m, a, b, P;
+        long long k, a, b, P;
         set<long long> min_vals;
 
     public:
-        KMV(double error_bound) {
+        KMV(double eps) {
             this->P = (1LL<<61)-1;
-            this->k = 84 / (pow(error_bound, 2)); // chosen delta was 1/3
+            this->k = 15 / pow(eps, 2); // chosen delta is 1/3
 
             vector<long long> hashValues = hasher.getNewHashFunction(P);
             this->a = hashValues[0], this->b = hashValues[1];
@@ -52,7 +52,7 @@ class KMV {
 };
 
 long long getNumSketches(double delta) {
-    return 4 * log(1/delta);
+    return 3 * log(1/delta);
 }
 
 int main(int args, char **argv) {
@@ -103,5 +103,5 @@ int main(int args, char **argv) {
     else
         answer = sketchResults[numSketches/2];
 
-    cout << "prediction: " << answer << endl;
+    cout << answer << endl;
 }
