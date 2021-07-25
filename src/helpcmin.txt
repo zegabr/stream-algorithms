@@ -1,0 +1,28 @@
+O algoritmo Count Min é usado para estimar pontualmente os “pesos totais” de fluxos, usando um campo
+w indicado como peso. O sketch e suposto fornecer ́(e, δ)-aproximações Ŵx dos pesos totais Wx de
+cada fluxo x, isto é, ́
+
+P[|Ŵx − Wx| ≥ eW] ≤ δ,
+
+onde W representa a soma de todos os pesos dos fluxos da entrada.
+
+Execução:
+    cmin [options] input_file.csv
+
+Opções:
+    --id <int>: Especifica número da coluna do arquivo de entrada a ser usado como identificador. Esta coluna pode conter valores repetidos.
+    default: 0
+
+    --weight <int>: Especifica o número da coluna do arquivo de entrada a ser usado como peso. Esta coluna deve conter inteiros positivos.
+    default: 3
+
+    --eps <double>: Especifica o valor do parametro epsilon (e) do estimador (limite do erro relativo desejado).
+    default: 0.01
+
+    --delta <double>: Especifica o valor do parametro δ do estimador (limite para a probabilidade que o erro relativo da estimação seja superior ao limite especificado). 
+    default: 0.05
+
+    --query <int> <int> ...: Especifica os identificadores dos fluxos cujos pesos devem ser estimados.
+    
+    --qryfile query_file_name: Alternativamente, os identificadores dos fluxos consultados podem ser fornecidos num arquivo com um identificador por linha atraves desta opção.
+    (se nenhuma das duas opções acima forem passadas, o código quebra)

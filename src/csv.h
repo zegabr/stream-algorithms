@@ -12,12 +12,7 @@ class CSVReader{
         int weightColumn;
         Hasher hasher;
 
-        void replaceCommasWithSpaces(string &line){
-            for(char &c : line){
-                if(c == ',') c = ' ';
-            }
-        }
-
+        // Gets the string of the csv line, given its position
         string getValueGivenPosition(string &line, int pos){
             string word;
             int currPos = 0;
@@ -33,23 +28,27 @@ class CSVReader{
         }
 
     public:
+        // Constructor for Count Min Sketch
         CSVReader(string &filename, int idCol, int weightCol){
             fileInput.open(filename);
             idColumn = idCol;
             weightColumn = weightCol;
-            ignoreFirstLine();
+            ignoreLine();
         }
 
+        // Constructor for KMV Sketch
         CSVReader(string &filename, int idCol){
             fileInput.open(filename);
             idColumn = idCol;
-            ignoreFirstLine();
+            ignoreLine();
         }
 
+        // Checks if csv has more lines to read
         bool hasNext(){
             return fileInput.peek() != EOF;
         }
 
+        // Gets id and weight in the current csv line for Count Min Sketch
         vector<long long> getNextValueAndWeight(){
             string line;
             vector<string> row;
@@ -60,6 +59,7 @@ class CSVReader{
             return {hasher.getUniqueHash(idWord), stoi(weightWord)};
         }
 
+        // Gets id and weight in the current csv line for KMV Sketch
         long long getNextValue(){
             string line;
             vector<string> row;
@@ -69,10 +69,10 @@ class CSVReader{
             return hasher.getUniqueHash(word);
         }
 
-        void ignoreFirstLine(){
+        // Ignores a line (only used once inside the constructor)
+        void ignoreLine(){
             string firstLine;
             getline(fileInput, firstLine);
         }
 };
-
 #endif

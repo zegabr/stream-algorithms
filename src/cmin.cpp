@@ -2,21 +2,21 @@
 #include "args.h"
 #include "csv.h"
 #include <climits>
-#include <map>
 
 using namespace std;
 
+ArgsReader argsReader;
+Hasher hasher;
+
 class CountMinSketch{
     private:
-        Hasher hasher;
         long long P = (1LL << 61) - 1;
         int t, k;
         vector<vector<long long>> hashFunctions;
         vector<vector<int>> C;
 
-        /**
-         * Returns the i-th hashed position of x
-         * */
+        
+        // Returns the i-th hashed position of x
         int getHash(int i, int x){
             long long a = hashFunctions[i][0];
             long long b = hashFunctions[i][1];
@@ -24,6 +24,7 @@ class CountMinSketch{
         }
 
     public:
+        // Constructor
         CountMinSketch(double eps, double delta){
             k = int(2.0/eps);
             t = ceil(log(1.0/delta));
@@ -33,6 +34,7 @@ class CountMinSketch{
             C.assign(t, vector<int>(k,0)); // C matrix (t x k)
         }
 
+        // Updates all estimatives for a given id x
         void update(long long x, long long w){
             for(int i = 0; i < t; i++){
                 long long j = getHash(i, x);
@@ -40,7 +42,8 @@ class CountMinSketch{
             }
         }
 
-        int query(int x){
+        // Gets the minimum of the weight estimatives for a given id x
+        long long query(long long x){
             int estimated_weight = INT_MAX;
             for(int i = 0; i < t; i++){
                 int j = getHash(i, x);
@@ -51,6 +54,9 @@ class CountMinSketch{
 };
 
 int main(int args, char **argv){
+    ios::sync_with_stdio(0); cin.tie(0);
+        
+    argsReader.checkHelpOption(args, argv, "./src/helpcmin.txt"); 
 
     set<string> possibleOptions = {
         "--id",
@@ -61,11 +67,12 @@ int main(int args, char **argv){
         "--qryfile"
     };
 
-    int id = 0; // default column to be used as id
-    int weight = 4; // default column to be used as weights
-    double eps = 0.1; // default error bound
-    double delta = 0.05;// default error probability
-    vector<int> queryIds; // ids to be queried in the end
+    int idColumn = 0;
+    int weightColumn = 4;
+    double eps = 0.1;
+    double delta = 0.05;
+    vector<long long> queryIds;
+    vector<string> queryOriginalIds;
 
     queue<string> argsQueue; // queue to store args temporarely
     for(int i = 1; i < args - 1; i++){ // get from second (since first is the command) to before last (since last is the csv file)
@@ -74,52 +81,32 @@ int main(int args, char **argv){
 
     string datasetFilename = argv[args - 1]; // csv filename
 
-    ArgsReader argsProcesser;
-    argsProcesser.updateArgsCountMin(
+    
+    argsReader.updateArgsCountMin(
             possibleOptions, 
             argsQueue, 
-            id, 
-            weight, 
+            idColumn, 
+            weightColumn, 
             eps, 
             delta, 
-            queryIds
+            queryIds,
+            queryOriginalIds
             );
 
-    //cout << "using: " << '\n';
-    //cout << "id=" << id << '\n';
-    //cout << "weight=" << weight << '\n';
-    //cout << "eps=" << eps << '\n';
-    //cout << "delta=" << delta << '\n';
-    //cout << "queries="; utils.printvec(queryIds);
-    //cout << "dataset filename = " << datasetFilename << '\n';
-
     CountMinSketch sketch(eps, delta);
-    CSVReader reader(datasetFilename, id, weight);
+    CSVReader reader(datasetFilename, idColumn, weightColumn);
 
-    Hasher hasher;
-    map<long long, long> freq;
     while(reader.hasNext()){
         vector<long long> idAndWeight = reader.getNextValueAndWeight();
         long long x = idAndWeight[0];
         long long w = idAndWeight[1];
         sketch.update(x,w);
-        freq[x] += w; // soma frequencia de x
     }
 
-    cout << "ESTIMATIVA" << endl;
-    for(int q : queryIds){
-        cout << sketch.query(q) << ' ';
+    cout << "ID\t\tESTIMATIVA" << endl;
+    for(int i = 0; i < queryIds.size(); i++){
+        cout << queryOriginalIds[i] << "\t\t";
+        cout << sketch.query(queryIds[i]) << '\n';
     }
-    cout << endl;
-
-    cout << "RESPOSTA" << endl;
-    for(int q : queryIds){
-        string qs = to_string(q);
-        long long h = hasher.getUniqueHash(qs);
-        cout << freq[h] << ' ';
-    }
-    cout << '\n';
-    cout << freq.size() << endl;
-
     return 0;
 }
