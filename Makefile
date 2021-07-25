@@ -33,10 +33,10 @@ install: build
 	sudo cp $(CMIN_FULL_PATH) /usr/bin/cmin; \
 	sudo cp $(KMV_FULL_PATH) /usr/bin/kmv; \
 	sudo cp $(CMIN_HELP_PATH) /usr/bin/helpcmin.txt; \
-	sudo cp $(KMV_HELP_PATH) /usr/bin/helpkmv.txt; \
+	sudo cp $(KMV_HELP_PATH) /usr/bin/helpkmv.txt;
 	
 uninstall:
 	sudo rm /usr/bin/cmin; \
 	sudo rm /usr/bin/kmv; \
 	sudo rm /usr/bin/helpcmin.txt; \
-	sudo rm /usr/bin/helpkmv.txt; \
+	sudo rm /usr/bin/helpkmv.txt;
