@@ -182,7 +182,7 @@ int main(int args, char **argv) {
 
     ArgsReader argsReader;
 
-    argsReader.updateArgsQDigest(
+    argsReader.updateArgs(
         argsQueue,
         column,
         eps,
