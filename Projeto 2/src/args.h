@@ -15,6 +15,78 @@ class ArgsReader{
     private:
         Hasher hasher;
     public:
+        void updateArgsQDigest(
+            queue<string> &argsQueue,
+            int &column,
+            double &eps,
+            long long &univ,
+            vector<long long> &rankQueries,
+            vector<double> &quantQueries,
+            string &queryType,
+            string &datasetFilename
+        ) {
+            while(!argsQueue.empty()) {
+                string curArg = argsQueue.front();
+                argsQueue.pop();
+
+                if(curArg == "--val") {
+                    if(argsQueue.empty()) missingArgumentValue(curArg);
+                    column = stoi(argsQueue.front());
+                    argsQueue.pop();
+                } else if(curArg == "--eps") {
+                    if(argsQueue.empty()) missingArgumentValue(curArg);
+                    eps = stod(argsQueue.front());
+                    argsQueue.pop();
+                } else if(curArg == "--univ") {
+                    if(argsQueue.empty()) missingArgumentValue(curArg);
+                    univ = stoll(argsQueue.front());
+                    argsQueue.pop();
+                } else {
+                    datasetFilename = curArg;
+
+                    if(argsQueue.empty()) missingArgumentValue("queryType");
+                    queryType = argsQueue.front();
+                    argsQueue.pop();
+
+                    if(argsQueue.empty()) missingArgumentValue("queryInfo");
+                    string queryArg = argsQueue.front();
+
+                    if(queryArg == "--in") {
+                        argsQueue.pop();
+
+                        if(argsQueue.empty()) missingArgumentValue("queriesFilename");
+                        string queriesFilename = argsQueue.front();
+                        argsQueue.pop();
+
+                        stringstream ss = getFileAsStream(queriesFilename);
+                        string queryArg;
+                        while(ss >> queryArg){
+                            if(queryType == "rank") {
+                                rankQueries.push_back(stoll(queryArg));
+                            } else {
+                                quantQueries.push_back(stod(queryArg));
+                            }
+                        }
+                    } else {
+                        while(!argsQueue.empty()) {
+                            queryArg = argsQueue.front();
+                            argsQueue.pop();
+                            if(queryType == "rank") {
+                                rankQueries.push_back(stoll(queryArg));
+                            } else {
+                                quantQueries.push_back(stod(queryArg));
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(rankQueries.empty() && quantQueries.empty()){
+                cerr << "empty file" << '\n';
+                exit(1);
+            }
+        }
+
         // Use argsQueue and possibleOptions to update Count Min variables
         void updateArgsCountMin(
                 set<string> &possibleOptions, 
@@ -84,7 +156,7 @@ class ArgsReader{
         }
 
         // Prints an missing argument error and exits
-        void missingArgumentValue(string &arg){
+        void missingArgumentValue(string arg){
             cerr << "missing argument value for " << arg << '\n';
             exit(1);
         }

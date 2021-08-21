@@ -166,17 +166,11 @@ class QDigest {
 };
 
 int main(int args, char **argv) {
-    set<string> possibleOptions = {
-        "--val",
-        "--eps",
-        "--univ"
-    };
-
     int column = 0;
     double eps = 0.1;
     long long univ = 1000;
-    vector<long long> queriesRank;
-    vector<double> queriesQuantile;
+    vector<long long> rankQueries;
+    vector<double> quantQueries;
 
     string datasetFilename;
     string queryType;
@@ -186,66 +180,30 @@ int main(int args, char **argv) {
         argsQueue.push(argv[i]);
     }
 
-    while(!argsQueue.empty()) {
-        string curArg = argsQueue.front();
-        argsQueue.pop();
+    ArgsReader argsReader;
 
-        if(curArg == "--val") {
-            column = stoi(argsQueue.front());
-            argsQueue.pop();
-        } else if(curArg == "--eps") {
-            eps = stod(argsQueue.front());
-            argsQueue.pop();
-        } else if(curArg == "--univ") {
-            univ = stoll(argsQueue.front());
-        } else {
-            datasetFilename = argsQueue.front();
-            argsQueue.pop();
-
-            queryType = argsQueue.front();
-            argsQueue.pop();
-
-            string queryArg = argsQueue.front();
-
-            if(queryArg == "--in") {
-                ArgsReader argsReader;
-                argsQueue.pop();
-                string queriesFilename = argsQueue.front();
-                argsQueue.pop();
-
-                stringstream ss = argsReader.getFileAsStream(queriesFilename);
-                string queryArg;
-                while(ss >> queryArg){
-                    if(queryType == "rank") {
-                        queriesRank.push_back(stoll(queryArg));
-                    } else {
-                        queriesQuantile.push_back(stod(queryArg));
-                    }
-                }
-            } else {
-                while(!argsQueue.empty()) {
-                    queryArg = argsQueue.front();
-                    argsQueue.pop();
-                    if(queryType == "rank") {
-                        queriesRank.push_back(stoll(queryArg));
-                    } else {
-                        queriesQuantile.push_back(stod(queryArg));
-                    }
-                }
-            }
-        }
-    }
+    argsReader.updateArgsQDigest(
+        argsQueue,
+        column,
+        eps,
+        univ,
+        rankQueries,
+        quantQueries,
+        queryType,
+        datasetFilename
+    );
 
     cout << column << endl;
     cout << eps << endl;
     cout << univ << endl;
+    cout << datasetFilename << endl;
     if(queryType == "rank") {
-        cout << queriesRank.size() << endl;
-        for(auto num : queriesRank) cout << num << " ";
+        cout << rankQueries.size() << endl;
+        for(auto num : rankQueries) cout << num << " ";
         cout << endl;
     } else {
-        cout << queriesQuantile.size() << endl;
-        for(auto num : queriesQuantile) cout << num << " ";
+        cout << quantQueries.size() << endl;
+        for(auto num : quantQueries) cout << num << " ";
         cout << endl;
     }
 
