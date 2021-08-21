@@ -1,3 +1,4 @@
+#include "args.h"
 #include<bits/stdc++.h>
 
 using namespace std;
@@ -164,56 +165,139 @@ class QDigest {
     }
 };
 
-int main() {
-    srand( (unsigned)time(NULL) );
+int main(int args, char **argv) {
+    set<string> possibleOptions = {
+        "--val",
+        "--eps",
+        "--univ"
+    };
 
-    long long univ = 256, maxW = 50, n = 10000;
+    int column = 0;
     double eps = 0.1;
+    long long univ = 1000;
+    vector<long long> queriesRank;
+    vector<double> queriesQuantile;
 
-    vector<pair<long long, long long>> stream;
-    vector<long long> trueRanks(univ);
-    QDigest *sketch = new QDigest(univ, eps);
-    long long totalWeight = 0;
+    string datasetFilename;
+    string queryType;
 
-    for(int i = 0; i < n; i++) {
-        stream.push_back({rand() % univ, rand() % maxW});
+    queue<string> argsQueue;
+    for(int i = 1; i < args; i++){
+        argsQueue.push(argv[i]);
     }
 
-    for(auto p : stream) {
-        totalWeight += p.second;
-        trueRanks[p.first] += p.second;
-        sketch->update(p.first, p.second);
-        sketch->compressTree();
+    while(!argsQueue.empty()) {
+        string curArg = argsQueue.front();
+        argsQueue.pop();
+
+        if(curArg == "--val") {
+            column = stoi(argsQueue.front());
+            argsQueue.pop();
+        } else if(curArg == "--eps") {
+            eps = stod(argsQueue.front());
+            argsQueue.pop();
+        } else if(curArg == "--univ") {
+            univ = stoll(argsQueue.front());
+        } else {
+            datasetFilename = argsQueue.front();
+            argsQueue.pop();
+
+            queryType = argsQueue.front();
+            argsQueue.pop();
+
+            string queryArg = argsQueue.front();
+
+            if(queryArg == "--in") {
+                ArgsReader argsReader;
+                argsQueue.pop();
+                string queriesFilename = argsQueue.front();
+                argsQueue.pop();
+
+                stringstream ss = argsReader.getFileAsStream(queriesFilename);
+                string queryArg;
+                while(ss >> queryArg){
+                    if(queryType == "rank") {
+                        queriesRank.push_back(stoll(queryArg));
+                    } else {
+                        queriesQuantile.push_back(stod(queryArg));
+                    }
+                }
+            } else {
+                while(!argsQueue.empty()) {
+                    queryArg = argsQueue.front();
+                    argsQueue.pop();
+                    if(queryType == "rank") {
+                        queriesRank.push_back(stoll(queryArg));
+                    } else {
+                        queriesQuantile.push_back(stod(queryArg));
+                    }
+                }
+            }
+        }
     }
 
-    vector<long long> trueQuantiles(sketch->totalWeight + 1);
-
-    for(int i = 1; i < univ; i++) {
-        trueRanks[i] += trueRanks[i-1];
+    cout << column << endl;
+    cout << eps << endl;
+    cout << univ << endl;
+    if(queryType == "rank") {
+        cout << queriesRank.size() << endl;
+        for(auto num : queriesRank) cout << num << " ";
+        cout << endl;
+    } else {
+        cout << queriesQuantile.size() << endl;
+        for(auto num : queriesQuantile) cout << num << " ";
+        cout << endl;
     }
 
-    for(int i = 0; i < univ; i++) {
-        trueQuantiles[trueRanks[i]] = i;
-    }
+    // srand( (unsigned)time(NULL) );
 
-    int wrongRanks = 0, wrongQuantiles = 0;
+    // long long univ = 256, maxW = 50, n = 10000;
+    // double eps = 0.1;
 
-    // QUERIES
-    for(int x = 0; x < univ; x++) {
-        long long rank = sketch->rank(x);
-        long long quantile = sketch->quantile((double)rank / (double)sketch->totalWeight);
+    // vector<pair<long long, long long>> stream;
+    // vector<long long> trueRanks(univ);
+    // QDigest *sketch = new QDigest(univ, eps);
+    // long long totalWeight = 0;
 
-        bool correctRank = (trueRanks[x] - eps*sketch->totalWeight) <= rank && rank <= (trueRanks[x] + eps*sketch->totalWeight);
-        bool correctQuantile = (rank - eps*sketch->totalWeight) <= trueRanks[quantile] && trueRanks[quantile] <= (rank + eps*sketch->totalWeight);
+    // for(int i = 0; i < n; i++) {
+    //     stream.push_back({rand() % univ, rand() % maxW});
+    // }
 
-        if(!correctRank) wrongRanks++;
-        if(!correctQuantile) wrongQuantiles++;
+    // for(auto p : stream) {
+    //     totalWeight += p.second;
+    //     trueRanks[p.first] += p.second;
+    //     sketch->update(p.first, p.second);
+    //     sketch->compressTree();
+    // }
 
-        cout << "rank = " << rank << "  trueRank = " << trueRanks[x] << "  minRank = " << (trueRanks[x] - eps*sketch->totalWeight) << "  maxRank = " << (trueRanks[x] + eps*sketch->totalWeight) << endl;
-        cout << "  quantile = " << quantile << "  trueQuantile = " << trueQuantiles[trueRanks[x]] << "  minQuantile" << endl; 
-    }
+    // vector<long long> trueQuantiles(sketch->totalWeight + 1);
 
-    cout << "wrong ranks: " << wrongRanks << endl;
-    cout << "wrong quantiles: " << wrongQuantiles << endl;
+    // for(int i = 1; i < univ; i++) {
+    //     trueRanks[i] += trueRanks[i-1];
+    // }
+
+    // for(int i = 0; i < univ; i++) {
+    //     trueQuantiles[trueRanks[i]] = i;
+    // }
+
+    // int wrongRanks = 0, wrongQuantiles = 0;
+
+    // // QUERIES
+    // for(int x = 0; x < univ; x++) {
+    //     long long rank = sketch->rank(x);
+    //     long long quantile = sketch->quantile((double)rank / (double)sketch->totalWeight);
+
+    //     bool correctRank = (trueRanks[x] - eps*sketch->totalWeight) <= rank && rank <= (trueRanks[x] + eps*sketch->totalWeight);
+    //     bool correctQuantile = (rank - eps*sketch->totalWeight) <= trueRanks[quantile] && trueRanks[quantile] <= (rank + eps*sketch->totalWeight);
+
+    //     if(!correctRank) wrongRanks++;
+    //     if(!correctQuantile) wrongQuantiles++;
+
+    //     cout << "rank = " << rank << "  trueRank = " << trueRanks[x] << "  minRank = " << (trueRanks[x] - eps*sketch->totalWeight) << "  maxRank = " << (trueRanks[x] + eps*sketch->totalWeight) << endl;
+    //     cout << "  quantile = " << quantile << "  trueQuantile = " << trueQuantiles[trueRanks[x]] << "  minQuantile" << endl; 
+    // }
+
+    // cout << "wrong ranks: " << wrongRanks << endl;
+    // cout << "wrong quantiles: " << wrongQuantiles << endl;
 
 }
