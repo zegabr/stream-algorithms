@@ -1,0 +1,34 @@
+stores list of triples xi, gi, deltai
+xi = item from the input
+gi = number of items represented by this triple
+deltai = info about uncertainty in the position of xi in the sorted order
+
+soma dos gj (j em [0,i]) <= rank(xi) + 1 <= deltai + soma dos gj (j em [0,i])
+gi + deltai < 2 * eps * N ==> numero de itens do input entre xi e xi-1 é no max 2*eps*N - 1
+
+N = total de coisas inseridasa no summary, que é o msm que o peso total W dado que nesse os pesos ssao unitarios 
+N == W
+
+init:
+    N = 0
+    lista de triples contendo somente um triple(inf, 1, 0)
+
+update:
+    N ++
+    -acha o menor i tal que x < xi
+        se gi + deltai + 1 < 2*eps*N
+            gi++
+        else
+            insert(x, 1, gi + deltai - 1) na posicao antes de i
+            se existe j tal que gj + gj+1 + deltaj+1 < 2 * eps * N: // a lista vai ta ordenada pelo insert, mas precisa fazer isso pra todos os pares q aparecerem? vai aparecer mais de um?
+                gj+1 += gj
+                remove tripla j
+                break; // poderia fazer ate o final mas o do livro mostra comprimindo só o 1o
+
+query:
+    -acha o menor i tal que x < xi (upperbound vai achar o xi gg easy)
+    return somatorio de gj pra j em [0,i-1] + (gi+deltai)/2  
+
+quanile(r): // retornar qqr cara com rank entre r+- eps*N
+    se r + 1 > N - eps*N: retorne o rbegin++
+    ache o 1o xi tal que rank(x) > r - eps*N retorne xi-1

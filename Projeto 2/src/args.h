@@ -84,14 +84,11 @@ class ArgsReader{
             }
         }
 
-        void checkHelpOption(int args, char **argv, string filename){
+        void checkHelpOption(int args, char **argv, const string &docString){
             if(args <= 2){
                 string arg = argv[1];
                 if(arg == "-h" or arg == "--help"){
-                    ifstream f(filename);
-                    stringstream buffer;
-                    buffer << f.rdbuf();
-                    cout << buffer.str() << endl;
+                    cout << docString << endl;
                     exit(0);
                 }else{
                     cerr << "error" << endl;
