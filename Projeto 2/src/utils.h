@@ -15,8 +15,8 @@
 
 using namespace std;
 
-class Utils{
-    public: // debug utilities
+// debug utilities
+namespace Utils{
         template<typename T>
             void printvec(vector<T> &v){
                 for(int i = 0; i < (int)v.size(); i++){
