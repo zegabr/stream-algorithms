@@ -1,4 +1,5 @@
 #include "args.h"
+#include "csv.h"
 #include<bits/stdc++.h>
 
 using namespace std;
@@ -30,6 +31,7 @@ class QDigest {
     QDigest(long long univ, double eps) {
 
         if(univ <= 0 || eps <= 0) {
+            cout << "EXIT IN CONSTRUCTOR" << endl;
             exit(1);
         }
 
@@ -41,6 +43,7 @@ class QDigest {
 
     void update(long long x, long long w) {
         if(!(0 <= x && x < this->univ && 0 <= w)) {
+            cout << "EXIT IN UPDATE" << endl;
             exit(1);
         }
 
@@ -75,6 +78,7 @@ class QDigest {
         }
 
         if(!(w == 0 || (r-l) == 1)) {
+            cout << "EXIT IN END OF UPDATE" << endl;
             exit(1);
         }
 
@@ -127,6 +131,7 @@ class QDigest {
 
     pair<Node*, long long> compress(Node *root, long long capacity, long long availUp) {
         if(!root) {
+            cout << "EXIT IN COMPRESS" << endl;
             exit(1);
         }
 
@@ -166,9 +171,10 @@ class QDigest {
 };
 
 int main(int args, char **argv) {
+    // GET ARGUMENTS
     int column = 0;
     double eps = 0.1;
-    long long univ = 1000;
+    long long univ = 10000;
     vector<long long> rankQueries;
     vector<double> quantQueries;
 
@@ -193,19 +199,50 @@ int main(int args, char **argv) {
         datasetFilename
     );
 
-    cout << column << endl;
-    cout << eps << endl;
-    cout << univ << endl;
-    cout << datasetFilename << endl;
-    if(queryType == "rank") {
-        cout << rankQueries.size() << endl;
-        for(auto num : rankQueries) cout << num << " ";
-        cout << endl;
-    } else {
-        cout << quantQueries.size() << endl;
-        for(auto num : quantQueries) cout << num << " ";
-        cout << endl;
+    QDigest *sketch = new QDigest(univ, eps);
+
+    // READ CSV AND UPDATE SKETCH
+    CSVReader reader(datasetFilename, column);
+    
+    vector<long long> trueRanks(univ);
+
+    while(reader.hasNext()) {
+        long long value = reader.getNextValue();
+        if(value >= univ) continue;
+
+        trueRanks[value]++;
+        sketch->update(value, 1);
+        sketch->compressTree();
     }
+
+    for(int i = 1; i < univ; i++) {
+        trueRanks[i] += trueRanks[i-1];
+    }
+
+    int wrongRank = 0, wrongQuant = 0;
+
+    // MAKE QUERIES
+    if(queryType == "rank") {
+        for(auto query : rankQueries) {
+            long long rank = sketch->rank(query);
+
+            bool correctRank = (trueRanks[query] - eps*sketch->totalWeight) <= rank && rank <= (trueRanks[query] + eps*sketch->totalWeight);
+            wrongRank += !correctRank;
+            cout << rank << " " << trueRanks[query] << " " << correctRank << endl;
+        }
+    } else {
+        for(auto query : quantQueries) {
+            long long quantile = sketch->quantile(query);
+
+            long long proposedRank = query * sketch->totalWeight;
+            bool correctQuantile = (proposedRank - eps*sketch->totalWeight) <= trueRanks[quantile] && trueRanks[quantile] <= (proposedRank + eps*sketch->totalWeight);
+            wrongQuant += !correctQuantile;
+            cout << quantile << endl;
+        }
+    }
+
+    cout << "wrongRank = " << wrongRank << endl;
+    cout << "wrongQuant = " << wrongQuant << endl;
 
     // srand( (unsigned)time(NULL) );
 
