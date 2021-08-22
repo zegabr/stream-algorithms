@@ -35,13 +35,6 @@ class GKSketch{
         double cap;
         list<GKTriple> L;
 
-        void print(){
-            for (auto& tri : L){
-                cout << tri.toString() << ' ';
-            }
-            cout << endl;
-        }
-
     public:
         GKSketch(double e) : eps(e){
             N = 0;
@@ -75,11 +68,9 @@ class GKSketch{
     
             if (double(firstBigger.g + firstBigger.delta + 1) < cap){
                 firstBigger.g++;
-                print();
             }else{
                 int g = firstBigger.g, delta = firstBigger.delta;
                 L.insert(firstBiggerIt, GKTriple(x, 1, g + delta - 1));
-                print();
                 compressOneIfPossible();
             }
         }

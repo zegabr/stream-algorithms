@@ -3,15 +3,62 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include "args.h"
 
 #include "GKSketch.h"
+#include "GKDocString.h"
+
 
 using namespace std;
 
-
 int main(int args, char **argv){
     ios::sync_with_stdio(0); cin.tie(0);
-    GKSketch gk(0.2);
+    ArgsReader argsReader;
+
+    argsReader.checkHelpOption(args, argv, GKDocString::DOC_STRING);
+    
+    int column = 0;
+    double eps = 0.1;
+    long long univ = 0;
+    vector<long long> rankQueries;
+    vector<double> quantQueries;
+
+    string datasetFilename;
+    string queryType;
+
+    queue<string> argsQueue;
+    for(int i = 1; i < args; i++){
+        argsQueue.push(argv[i]);
+    }
+
+
+    argsReader.updateArgs(
+        argsQueue,
+        column,
+        eps,
+        univ,
+        rankQueries,
+        quantQueries,
+        queryType,
+        datasetFilename
+    );
+
+    cout << column << endl;
+    cout << eps << endl;
+    cout << univ << endl;
+    cout << datasetFilename << endl;
+    if(queryType == "rank") {
+        cout << rankQueries.size() << endl;
+        for(auto num : rankQueries) cout << num << " ";
+        cout << endl;
+    } else {
+        cout << quantQueries.size() << endl;
+        for(auto num : quantQueries) cout << num << " ";
+        cout << endl;
+    }
+    
+
+    GKSketch gk(eps);
 
     vector<int> v = {1, 4, 2, 8, 5, 7, 6, 7, 6, 7, 2, 1};
     for(int x : v){

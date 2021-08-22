@@ -11,6 +11,7 @@
 #include <fstream>
 #include <chrono>
 #include <random>
+#include "GKSketch.h"
 
 using namespace std;
 
@@ -22,6 +23,13 @@ class Utils{
                     cout << v[i] << " \n"[i==v.size()-1];
                 }
             }
+        
+        void print(list<GKTriple> & L){
+            for (auto& tri : L){
+                cout << tri.toString() << ' ';
+            }
+            cout << endl;
+        }
 };
 
 #endif
