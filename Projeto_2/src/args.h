@@ -16,8 +16,8 @@ class ArgsReader{
             queue<string> &argsQueue,
             int &column,
             double &eps,
-            long long &univ,
-            vector<long long> &rankQueries,
+            int &univ,
+            vector<int> &rankQueries,
             vector<double> &quantQueries,
             string &queryType,
             string &datasetFilename
