@@ -123,4 +123,4 @@ class GKSketch{
         }
 };
 
-#endif GK_SKETCH
+#endif

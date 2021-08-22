@@ -3,7 +3,7 @@ CURR_DIR = $(shell pwd)
 PARENT_DIR = $(abspath $(CURR_DIR)/..)
 
 GK_SRC_PATH = $(CURR_DIR)/gk.cpp
-QDIG_SRC_PATH = $(CURR_DIR)/qdigest.cpp
+QDIG_SRC_PATH = $(CURR_DIR)/QDigestSketch.cpp
 
 GK_BIN_PATH = $(PARENT_DIR)/bin/gk
 QDIG_BIN_PATH = $(PARENT_DIR)/bin/qdig
