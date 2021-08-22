@@ -7,15 +7,15 @@ using namespace std;
 
 class Node {
     public:
-    long long weight;
+    int weight;
     vector<Node*> children;
     Node() {
         this->weight = 0;
         this->children = {NULL, NULL};
     }
 
-    long long getTreeWeight() {
-        long long treeWeight = this->weight;
+    int getTreeWeight() {
+        int treeWeight = this->weight;
         for(auto child : this->children) {
             treeWeight += child ? child->getTreeWeight() : 0;
         }
@@ -25,11 +25,11 @@ class Node {
 
 class QDigest {
     public:
-    long long logUniv, univ, totalWeight;
+    int logUniv, univ, totalWeight;
     double eps;
     Node *root;
 
-    QDigest(long long univ, double eps) {
+    QDigest(int univ, double eps) {
 
         if(univ <= 0 || eps <= 0) {
             cout << "EXIT IN CONSTRUCTOR" << endl;
@@ -42,26 +42,26 @@ class QDigest {
         this->root = new Node();
     }
 
-    void update(long long x, long long w) {
+    void update(int x, int w) {
         if(!(0 <= x && x < this->univ && 0 <= w)) {
             cout << "EXIT IN UPDATE" << endl;
             exit(1);
         }
 
         this->totalWeight += w;
-        long long capacity = (long long)(this->eps * this->totalWeight / log2(this->univ));
+        int capacity = (int)(this->eps * this->totalWeight / log2(this->univ));
         Node *cur = this->root;
 
-        long long l = 0, r = this->univ;
+        int l = 0, r = this->univ;
 
         while(w && (r-l) > 1) {
-            long long avail = capacity - cur->weight;
-            long long added = min(w, avail);
+            int avail = capacity - cur->weight;
+            int added = min(w, avail);
             cur->weight += added;
             w -= added;
-            long long mid = (l+r) / 2;
+            int mid = (l+r) / 2;
 
-            long long nextCur;
+            int nextCur;
 
             if(x < mid) {
                 nextCur = 0;
@@ -86,18 +86,18 @@ class QDigest {
         cur->weight += w;
     }
 
-    long long rank(long long x) {
+    int rank(int x) {
         if(x < 0 || this->univ <= x) {
             return 0;
         }
 
         Node *cur = this->root;
-        long long l = 0, r = this->univ;
-        long long ret = 0;
-        long long previous = 0;
+        int l = 0, r = this->univ;
+        int ret = 0;
+        int previous = 0;
 
         while(cur && (r-l) > 1) {
-            long long mid = (l+r) / 2;
+            int mid = (l+r) / 2;
             previous += cur->weight;
             if(x < mid) {
                 r = mid;
@@ -112,13 +112,13 @@ class QDigest {
         return ret + previous/2;
     }
 
-    long long quantile(double qPercent) {
-        long long q = qPercent * this->totalWeight;
-        long long l = 0, r = this->univ-1;
+    int quantile(double qPercent) {
+        int q = qPercent * this->totalWeight;
+        int l = 0, r = this->univ-1;
 
         while(l < r) {
-            long long mid = (l+r+1) / 2;
-            long long estimatedRank = this->rank(mid);
+            int mid = (l+r+1) / 2;
+            int estimatedRank = this->rank(mid);
 
             if(estimatedRank < q) {
                 l = mid;
@@ -130,30 +130,30 @@ class QDigest {
         return l;
     }
 
-    pair<Node*, long long> compress(Node *root, long long capacity, long long availUp) {
+    pair<Node*, int> compress(Node *root, int capacity, int availUp) {
         if(!root) {
             cout << "EXIT IN COMPRESS" << endl;
             exit(1);
         }
 
-        long long moveUp = 0;
+        int moveUp = 0;
 
         for(int i = 0; i < 2; i++) {
             Node *child = root->children[i];
 
             if(child) {
-                long long availHere = capacity - root->weight;
-                pair<Node*, long long> nextCompress = this->compress(child, capacity, availUp + availHere);
+                int availHere = capacity - root->weight;
+                pair<Node*, int> nextCompress = this->compress(child, capacity, availUp + availHere);
                 
                 root->children[i] = nextCompress.first;
-                long long putHere = min(availHere, nextCompress.second);
+                int putHere = min(availHere, nextCompress.second);
                 root->weight += putHere;
                 moveUp += (nextCompress.second - putHere);
                 availUp -= (nextCompress.second - putHere);
             }
         }
 
-        long long moveUpFromHere = min(availUp, root->weight);
+        int moveUpFromHere = min(availUp, root->weight);
         moveUp += moveUpFromHere;
         root->weight -= moveUpFromHere;
 
@@ -166,7 +166,7 @@ class QDigest {
     }
 
     void compressTree() {
-        long long capacity = (long long)(this->eps * this->totalWeight / log2(this->univ));
+        int capacity = (int)(this->eps * this->totalWeight / log2(this->univ));
         this->compress(this->root, capacity, 0);
     }
 };
@@ -179,8 +179,8 @@ int main(int args, char **argv) {
     // GET ARGUMENTS
     int column = 0;
     double eps = 0.1;
-    long long univ = 10000;
-    vector<long long> rankQueries;
+    int univ = 10000;
+    vector<int> rankQueries;
     vector<double> quantQueries;
 
     string datasetFilename;
@@ -208,101 +208,50 @@ int main(int args, char **argv) {
     // READ CSV AND UPDATE SKETCH
     CSVReader reader(datasetFilename, column);
     
-    vector<long long> trueRanks(univ);
+    // vector<int> trueRanks(univ);
 
     while(reader.hasNext()) {
-        long long value = reader.getNextValue();
+        int value = reader.getNextValue();
         if(value >= univ) continue;
 
-        trueRanks[value]++;
+        // trueRanks[value]++;
         sketch->update(value, 1);
         sketch->compressTree();
     }
-
-    for(int i = 1; i < univ; i++) {
-        trueRanks[i] += trueRanks[i-1];
-    }
-
-    int wrongRank = 0, wrongQuant = 0;
-
-    // MAKE QUERIES
-    if(queryType == "rank") {
-        for(auto query : rankQueries) {
-            long long rank = sketch->rank(query);
-
-            long long minRank = (trueRanks[query] - eps*sketch->totalWeight);
-            long long maxRank = (trueRanks[query] + eps*sketch->totalWeight);
-            bool correctRank = minRank <= rank && rank <= maxRank;
-            wrongRank += !correctRank;
-
-            cout << rank << " " << trueRanks[query] << " " << correctRank << "  min = " << minRank << "  max = " << maxRank << endl;
-        }
-    } else {
-        for(auto query : quantQueries) {
-            long long quantile = sketch->quantile(query);
-
-            long long proposedRank = query * sketch->totalWeight;
-            long long minRank = (proposedRank - eps*sketch->totalWeight);
-            long long maxRank = (proposedRank + eps*sketch->totalWeight);
-            bool correctQuantile = minRank <= trueRanks[quantile] && trueRanks[quantile] <= maxRank;
-            wrongQuant += !correctQuantile;
-
-            cout << quantile << " " << " " << correctQuantile << " " << trueRanks[quantile] << " " << proposedRank << "  min = " << minRank << "  max = " << maxRank << endl;
-        }
-    }
-
-    cout << "wrongRank = " << wrongRank << endl;
-    cout << "wrongQuant = " << wrongQuant << endl;
-
-    // srand( (unsigned)time(NULL) );
-
-    // long long univ = 256, maxW = 50, n = 10000;
-    // double eps = 0.1;
-
-    // vector<pair<long long, long long>> stream;
-    // vector<long long> trueRanks(univ);
-    // QDigest *sketch = new QDigest(univ, eps);
-    // long long totalWeight = 0;
-
-    // for(int i = 0; i < n; i++) {
-    //     stream.push_back({rand() % univ, rand() % maxW});
-    // }
-
-    // for(auto p : stream) {
-    //     totalWeight += p.second;
-    //     trueRanks[p.first] += p.second;
-    //     sketch->update(p.first, p.second);
-    //     sketch->compressTree();
-    // }
-
-    // vector<long long> trueQuantiles(sketch->totalWeight + 1);
 
     // for(int i = 1; i < univ; i++) {
     //     trueRanks[i] += trueRanks[i-1];
     // }
 
-    // for(int i = 0; i < univ; i++) {
-    //     trueQuantiles[trueRanks[i]] = i;
-    // }
+   // int wrongRank = 0, wrongQuant = 0;
 
-    // int wrongRanks = 0, wrongQuantiles = 0;
+    // MAKE QUERIES
+    if(queryType == "rank") {
+        for(auto query : rankQueries) {
+            int rank = sketch->rank(query);
+            cout << rank << endl;
 
-    // // QUERIES
-    // for(int x = 0; x < univ; x++) {
-    //     long long rank = sketch->rank(x);
-    //     long long quantile = sketch->quantile((double)rank / (double)sketch->totalWeight);
+            // int minRank = (trueRanks[query] - eps*sketch->totalWeight);
+            // int maxRank = (trueRanks[query] + eps*sketch->totalWeight);
+            // bool correctRank = minRank <= rank && rank <= maxRank;
+            // wrongRank += !correctRank;
+            // cout << rank << " " << trueRanks[query] << " " << correctRank << "  min = " << minRank << "  max = " << maxRank << endl;
+        }
+    } else {
+        for(auto query : quantQueries) {
+            int quantile = sketch->quantile(query);
+            cout << quantile << endl;
 
-    //     bool correctRank = (trueRanks[x] - eps*sketch->totalWeight) <= rank && rank <= (trueRanks[x] + eps*sketch->totalWeight);
-    //     bool correctQuantile = (rank - eps*sketch->totalWeight) <= trueRanks[quantile] && trueRanks[quantile] <= (rank + eps*sketch->totalWeight);
+            // int proposedRank = query * sketch->totalWeight;
+            // int minRank = (proposedRank - eps*sketch->totalWeight);
+            // int maxRank = (proposedRank + eps*sketch->totalWeight);
+            // bool correctQuantile = minRank <= trueRanks[quantile] && trueRanks[quantile] <= maxRank;
+            // wrongQuant += !correctQuantile;
+            // cout << quantile << " " << " " << correctQuantile << " " << trueRanks[quantile] << " " << proposedRank << "  min = " << minRank << "  max = " << maxRank << endl;
+        }
+    }
 
-    //     if(!correctRank) wrongRanks++;
-    //     if(!correctQuantile) wrongQuantiles++;
-
-    //     cout << "rank = " << rank << "  trueRank = " << trueRanks[x] << "  minRank = " << (trueRanks[x] - eps*sketch->totalWeight) << "  maxRank = " << (trueRanks[x] + eps*sketch->totalWeight) << endl;
-    //     cout << "  quantile = " << quantile << "  trueQuantile = " << trueQuantiles[trueRanks[x]] << "  minQuantile" << endl; 
-    // }
-
-    // cout << "wrong ranks: " << wrongRanks << endl;
-    // cout << "wrong quantiles: " << wrongQuantiles << endl;
+    // cout << "wrongRank = " << wrongRank << endl;
+    // cout << "wrongQuant = " << wrongQuant << endl;
 
 }
