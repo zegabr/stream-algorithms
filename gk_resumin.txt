@@ -29,6 +29,12 @@ query:
     -acha o menor i tal que x < xi (upperbound vai achar o xi gg easy)
     return somatorio de gj pra j em [0,i-1] + (gi+deltai)/2  
 
+    check:
+    bool correctRank = (trueRank - epstotalWeight) <= estimatedRank  <= (trueRank + epstotalWeight);
+    bool correctQuantile = (wantedRank - epstotalWeight) <= trueRank[quantile] <= (wantedRank + epstotalWeight);
+
 quanile(r): // retornar qqr cara com rank entre r+- eps*N
     se r + 1 > N - eps*N: retorne o rbegin++
     ache o 1o xi tal que rank(x) > r - eps*N retorne xi-1
+
+

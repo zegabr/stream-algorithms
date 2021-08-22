@@ -17,9 +17,9 @@ int main(int args, char **argv){
 
     argsReader.checkHelpOption(args, argv, GKDocString::DOC_STRING);
 
-    int column = 0;
+    int column = 5;
     double eps = 0.1;
-    long long univ = 0;
+    long long univ = INT_MAX;
     vector<long long> rankQueries;
     vector<double> quantQueries;
 
@@ -41,48 +41,51 @@ int main(int args, char **argv){
         queryType,
         datasetFilename
     );
-
-    cout << column << endl;
-    cout << eps << endl;
-    cout << univ << endl;
-    cout << datasetFilename << endl;
-    if(queryType == "rank") {
-        cout << rankQueries.size() << endl;
-        for(auto num : rankQueries) cout << num << " ";
-        cout << endl;
-    } else {
-        cout << quantQueries.size() << endl;
-        for(auto num : quantQueries) cout << num << " ";
-        cout << endl;
-    }
     
     GKSketch gk(eps);
     CSVReader reader(datasetFilename,column);
+    vector<int> v;
 
     while(reader.hasNext()){
         int x = reader.getNextValue();
-        cout << x << endl;
+        if(x <= univ){
+            gk.update(x);
+            v.push_back(x);
+        }
     }
 
-    // vector<int> v = {1, 4, 2, 8, 5, 7, 6, 7, 6, 7, 2, 1};
-    // for(int x : v){
-    //     gk.update(x);
+    // if(rankQueries.size() > 0){
+    //     cout << "x" << "\t\t" << "rank(x)" << '\n';
+    //     for(int x : rankQueries){
+    //         cout << x << "\t\t" << gk.rank(x) << endl;
+    //     }
     // }
 
+    if(quantQueries.size() > 0){
+        cout << "r" << "\t\t" << "quant(r)" << "\t\t" << "asExpected" << endl;
+        for(double r : quantQueries){
+            int q = gk.quantile(r);
+            cout << r << "\t\t" << q << "\t\t";
+            cout << (gk.rank(q) > eps*gk.getSize() - gk.getAcceptableError()) << endl;
+        }
+    }
+    
+
+    // int counter = 0;
     // set<int> s(v.begin(), v.end());
     // sort(v.begin(), v.end());
-
+    // cout << "x\trankReal\trankEstimado\terror\tasExpected" << endl;
     // for(int x : s){
     //     int rankReal = lower_bound(v.begin(), v.end(), x) - v.begin();
     //     double rankEstimado = gk.rank(x);
-    //     cout << x << ' ' 
-    //     << rankReal << ' '
-    //     << rankEstimado << ' '
-    //     << abs(rankReal - rankEstimado) << endl;
+    //     double error = abs(rankReal - rankEstimado);
+    //     cout << x << '\t' 
+    //     << rankReal << '\t'
+    //     << rankEstimado << "\t\t"
+    //     << error << "\t\t";
+    //     cout << (error < eps * v.size()) << endl;
+    //     counter += !(error < eps * v.size());
     // }
+    // cout << "errors = " << counter<<"/" << s.size() << endl;
 
-    // for(int x : v) cout << x << ' '; cout << endl;
-    // int mediana = gk.quantile(0.5);
-    // cout << "mediana =" << mediana << endl;
-    // cout << gk.rank(mediana) << " > " << 0.5*gk.getSize() - gk.getAcceptableError() << endl;
 }
