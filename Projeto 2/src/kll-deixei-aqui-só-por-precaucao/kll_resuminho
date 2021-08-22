@@ -1,0 +1,50 @@
+----- taa kll --------
+estrutura de dados: uma lista de listas
+B = [ [], [], ;;; [] ]
+listas internas vao ter uma capacidade diferente, a cada nivel, maior a capacidade
+eps = estimativa de erro
+k = capacidade do maior nivel, k é funcao de eps
+c = um numero constante entre (0.5 , 1) (intervalo aberto), serve pra definit a capacidade: cap(l) = k * c ^(h-l), onde h é o maior nivel e l é o nivel atual
+
+init(eps, c, delta)
+    k = 1/eps * raiz( 1/c/c/(2c-1) * log(2/delta)    )
+    c = c
+    B = [[]]
+    h = 0
+
+update(x)
+    B[0] = B[0].add(x)
+    compress()
+
+compress()
+    for l = 0 -> h
+        if |B[l]| >= max(2,teto(k*c^(h-l)))
+            sort(B[l])
+            moeda = random entre 0 e 1
+            if moeda <= 0.5
+                B[l+1].add(itens de indice impar de B[l])
+            else
+                B[l+1].add(itens de indice par de B[l])
+            B[l] = []
+        if B[h+1] foi criado
+            h = h+1
+
+rankKQuery(x)
+    r = 0
+    for l = 0 -> h
+        ri = rank(i,x)
+        r += ri * (1<<l)
+    return r
+
+rank(i,x)
+    if B[i].back().size() == 0
+        return 0
+    if B[i][B[i].size()-1] < x
+        return B[i].size()
+    return posicao do 1o num > x em B[i]
+
+Pr[|Restimado(x) - Rreal(x)| >= eps*N] < delta
+
+...
+
+
