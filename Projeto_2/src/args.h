@@ -36,7 +36,7 @@ class ArgsReader{
                     argsQueue.pop();
                 } else if(curArg == "--univ") {
                     if(argsQueue.empty()) missingArgumentValue(curArg);
-                    univ = stoll(argsQueue.front());
+                    univ = stoi(argsQueue.front());
                     argsQueue.pop();
                 } else {
                     datasetFilename = curArg;
@@ -59,7 +59,7 @@ class ArgsReader{
                         string queryArg;
                         while(ss >> queryArg){
                             if(queryType == "rank") {
-                                rankQueries.push_back(stoll(queryArg));
+                                rankQueries.push_back(stoi(queryArg));
                             } else {
                                 quantQueries.push_back(stod(queryArg));
                             }
@@ -74,7 +74,7 @@ class ArgsReader{
                             queryArg = argsQueue.front();
                             argsQueue.pop();
                             if(queryType == "rank") {
-                                rankQueries.push_back(stoll(queryArg));
+                                rankQueries.push_back(stoi(queryArg));
                             } else {
                                 quantQueries.push_back(stod(queryArg));
                             }

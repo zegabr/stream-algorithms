@@ -46,7 +46,7 @@ class CSVReader{
 
             getline(fileInput, line);
             string word = getValueGivenPosition(line, valColumn);
-            return stoll(word);
+            return stoi(word);
         }
 
         // Ignores a line (only used once in the constructor)

@@ -2,33 +2,31 @@ CPP_FLAGS = -std=c++17 -O2
 CURR_DIR = $(shell pwd)
 PARENT_DIR = $(abspath $(CURR_DIR)/..)
 
-GK_SRC_PATH = $(CURR_DIR)/gk.cpp
+GKS_SRC_PATH = $(CURR_DIR)/gks.cpp
 QDIG_SRC_PATH = $(CURR_DIR)/QDigestSketch.cpp
 
-GK_BIN_PATH = $(PARENT_DIR)/bin/gk
+GKS_BIN_PATH = $(PARENT_DIR)/bin/gks
 QDIG_BIN_PATH = $(PARENT_DIR)/bin/qdig
 
 
 default:
 	cat Makefile
 
-build-gk: 
-	mkdir $(PARENT_DIR)/bin; \
-	g++ $(CPP_FLAGS) $(GK_SRC_PATH) -o $(GK_BIN_PATH);
+build-gks:
+	g++ $(CPP_FLAGS) $(GKS_SRC_PATH) -o $(GKS_BIN_PATH);
 
 build-qdig:
-	mkdir $(PARENT_DIR)/bin; \
 	g++ $(CPP_FLAGS) $(QDIG_SRC_PATH) -o $(QDIG_BIN_PATH); \
 
 build: 
-	mkdir $(PARENT_DIR)/bin; \
-	make build-gk; \
-	make build-qdig; \
+	mkdir $(PARENT_DIR)/bin ; \
+	make build-gks; \
+	make build-qdig
 
 install: build
-	sudo cp $(GK_BIN_PATH) /usr/bin/gk; \
-	sudo cp $(QDIG_BIN_PATH) /usr/bin/qdig; \
+	sudo cp $(GKS_BIN_PATH) /usr/bin/gks; \
+	sudo cp $(QDIG_BIN_PATH) /usr/bin/qdig;
 
 uninstall:
-	sudo rm /usr/bin/gk; \
-	sudo rm /usr/bin/qdig; \
+	sudo rm /usr/bin/gks; \
+	sudo rm /usr/bin/qdig;
