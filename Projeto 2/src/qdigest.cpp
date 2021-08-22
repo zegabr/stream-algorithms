@@ -226,18 +226,24 @@ int main(int args, char **argv) {
         for(auto query : rankQueries) {
             long long rank = sketch->rank(query);
 
-            bool correctRank = (trueRanks[query] - eps*sketch->totalWeight) <= rank && rank <= (trueRanks[query] + eps*sketch->totalWeight);
+            long long minRank = (trueRanks[query] - eps*sketch->totalWeight);
+            long long maxRank = (trueRanks[query] + eps*sketch->totalWeight);
+            bool correctRank = minRank <= rank && rank <= maxRank;
             wrongRank += !correctRank;
-            cout << rank << " " << trueRanks[query] << " " << correctRank << endl;
+
+            cout << rank << " " << trueRanks[query] << " " << correctRank << "  min = " << minRank << "  max = " << maxRank << endl;
         }
     } else {
         for(auto query : quantQueries) {
             long long quantile = sketch->quantile(query);
 
             long long proposedRank = query * sketch->totalWeight;
-            bool correctQuantile = (proposedRank - eps*sketch->totalWeight) <= trueRanks[quantile] && trueRanks[quantile] <= (proposedRank + eps*sketch->totalWeight);
+            long long minRank = (proposedRank - eps*sketch->totalWeight);
+            long long maxRank = (proposedRank + eps*sketch->totalWeight);
+            bool correctQuantile = minRank <= trueRanks[quantile] && trueRanks[quantile] <= maxRank;
             wrongQuant += !correctQuantile;
-            cout << quantile << endl;
+
+            cout << quantile << " " << " " << correctQuantile << " " << trueRanks[quantile] << " " << proposedRank << "  min = " << minRank << "  max = " << maxRank << endl;
         }
     }
 
