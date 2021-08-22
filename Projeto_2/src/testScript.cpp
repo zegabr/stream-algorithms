@@ -1,4 +1,4 @@
-#include "QDigestSketchTest.h"
+#include "QDigestTest.h"
 #include<bits/stdc++.h>
 
 using namespace std;
@@ -42,18 +42,16 @@ int main() {
     vector<double> quantQueries = getQuantQueries();
     vector<vector<int>> rankQueries = getRankQueries(univVals);
 
-    RunQDigest qdigest;
-
-    cout << "column,eps,univ,queryType,time,memory,queryValue,estimate,correctValue/proposedRank,----/achievedRank,minEstimate,maxEstimate,withinBounds\n";
-
     // RANK QUERIES
     for(auto column : columns) {
         // CHNAGE CSV
         int univCount = 0;
 
         for(auto eps : epsVals) {
-            for(auto univ : univVals) {
-                qdigest.runQdigest(column, eps, univ, rankQueries[univCount], quantQueries, "network_flows.csv", "rank");
+            for(int u = 0; u < univVals.size(); u++) {
+                int univ = univVals[u];
+                Teste *teste = new Teste();
+                teste->runTest(column, eps, univ, rankQueries[u], quantQueries, "network_flows.csv", "rank");
                 univCount++;
             }
         }
@@ -64,8 +62,10 @@ int main() {
         // CHNAGE CSV
 
         for(auto eps : epsVals) {
-            for(auto univ : univVals) {
-                qdigest.runQdigest(column, eps, univ, rankQueries[0], quantQueries, "network_flows.csv,", "quant");
+            for(int u = 0; u < univVals.size(); u++) {
+                int univ = univVals[u];
+                Teste *teste = new Teste();
+                teste->runTest(column, eps, univ, rankQueries[u], quantQueries, "network_flows.csv,", "quant");
             }
         }
     }
