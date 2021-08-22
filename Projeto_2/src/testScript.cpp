@@ -42,7 +42,7 @@ int main() {
     vector<double> quantQueries = getQuantQueries();
     vector<vector<int>> rankQueries = getRankQueries(univVals);
 
-    // RANK QUERIES
+    //RANK QUERIES
     for(auto column : columns) {
         // CHNAGE CSV
         int univCount = 0;
@@ -65,7 +65,7 @@ int main() {
             for(int u = 0; u < univVals.size(); u++) {
                 int univ = univVals[u];
                 Teste *teste = new Teste();
-                teste->runTest(column, eps, univ, rankQueries[u], quantQueries, "network_flows.csv,", "quant");
+                teste->runTest(column, eps, univ, rankQueries[u], quantQueries, "network_flows.csv", "quant");
             }
         }
     }

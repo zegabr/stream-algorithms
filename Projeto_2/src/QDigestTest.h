@@ -219,7 +219,6 @@ class Teste {
             if(value >= univ) continue;
 
             trueRanks[value]++;
-
             clock_t timeBegin = clock();
             sketch->update(value, 1);
             sketch->compressTree();

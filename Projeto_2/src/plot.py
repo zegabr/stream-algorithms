@@ -150,7 +150,13 @@ def plotQueryGraphs():
                                     else:
                                         query = float(values[6])
 
-                                    estimate = int(values[7])
+                                    estimate = 0
+
+                                    if qType == "rank":
+                                        estimate = int(values[7])
+                                    else:
+                                        estimate = float(values[9])
+
                                     minAcceptable = int(values[10])
                                     maxAcceptable = int(values[11])
                                     x.append(query)
@@ -164,4 +170,6 @@ def plotQueryGraphs():
                         x, y, yMin, yMax, plotName, xLabel, yLabel, filepath)
 
 
+plotMemoryGraphs()
+plotTimeGraphs()
 plotQueryGraphs()

@@ -43,4 +43,5 @@ def genQueryCsvs():
                     writer.write(line)
 
 
+genMemoryCsvs()
 genQueryCsvs()
