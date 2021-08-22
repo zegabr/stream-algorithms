@@ -131,12 +131,18 @@ using namespace std;
 
 int main(int args, char **argv){
     ios::sync_with_stdio(0); cin.tie(0);
-    ArgsReader argsReader;
+
+vector<double> epsVals = {0.05, 0.1, 0.15, 0.2};
+    vector<int> univVals = {100, 1000, 10000};
+    vector<int> columns = {4, 5, 6, 7};
+    vector<double> quantQueries = {0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8 ,0.9, 1};
+    vector<vector<int>> rankQueries = getRankQueries(univVals);
+    
 
     int column = 5;
     double eps = 0.1;
-    long long univ = INT_MAX;
-    vector<long long> rankQueries;
+    int univ = INT_MAX;
+    vector<int> rankQueries;
     vector<double> quantQueries;
 
     string datasetFilename = "../dataset/network_flows.csv";
@@ -164,19 +170,21 @@ int main(int args, char **argv){
     //     }
     // }
 
-    if(quantQueries.size() > 0){
-        cout << "r" << "\t\t" << "quant(r)" << "\t\t" << "asExpected" << endl;
-        for(double r : quantQueries){
-            int q = gk.quantile(r);
-            cout << r << "\t\t" << q << "\t\t";
-            cout << (gk.rank(q) > eps*gk.getSize() - gk.getAcceptableError()) << endl;
-        }
-    }
+    // if(quantQueries.size() > 0){
+    //     cout << "r" << "\t\t" << "quant(r)" << "\t\t" << "asExpected" << endl;
+    //     for(double r : quantQueries){
+    //         int q = gk.quantile(r);
+    //         cout << r << "\t\t" << q << "\t\t";
+    //         cout << (gk.rank(q) > r*gk.getSize() - gk.getAcceptableError()) << endl;
+    //     }
+    // }
+    sort(v.begin(), v.end());
+    cout << gk.quantile(0.5) << endl;
+    cout << v[v.size()/2 - eps*gk.getSize()] << ' ' << v[v.size()/2] << ' ' << v[v.size()/2 + eps*gk.getSize()] << endl;
     
 
     // int counter = 0;
     // set<int> s(v.begin(), v.end());
-    // sort(v.begin(), v.end());
     // cout << "x\trankReal\trankEstimado\terror\tasExpected" << endl;
     // for(int x : s){
     //     int rankReal = lower_bound(v.begin(), v.end(), x) - v.begin();

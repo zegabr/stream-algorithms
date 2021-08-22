@@ -38,3 +38,5 @@ quanile(r): // retornar qqr cara com rank entre r+- eps*N
     ache o 1o xi tal que rank(x) > r - eps*N retorne xi-1
 
 
+r - eps*N <= rank(x) <= r + eps*N
+

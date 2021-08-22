@@ -36,3 +36,5 @@ bin/*
 
 # dataset
 dataset/*
+/Projeto_2/bin/gks
+/Projeto_2/bin/qdig

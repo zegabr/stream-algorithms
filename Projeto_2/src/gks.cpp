@@ -18,8 +18,8 @@ int main(int args, char **argv){
 
     int column = 5;
     double eps = 0.1;
-    long long univ = INT_MAX;
-    vector<long long> rankQueries;
+    int univ = INT_MAX;
+    vector<int> rankQueries;
     vector<double> quantQueries;
 
     string datasetFilename;
@@ -65,7 +65,7 @@ int main(int args, char **argv){
         for(double r : quantQueries){
             int q = gk.quantile(r);
             cout << r << "\t\t" << q << "\t\t\t";
-            cout << (gk.rank(q) > eps*gk.getSize() - gk.getAcceptableError()) << endl;
+            cout << (gk.rank(q) > r*gk.getSize() - gk.getAcceptableError()) << endl;
         }
     }
 }

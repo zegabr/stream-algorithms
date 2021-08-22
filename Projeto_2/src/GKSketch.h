@@ -75,7 +75,7 @@ class GKSketch{
             }
         }
 
-        double rank(int x){
+        double rank(int x){// TODO: if has time, uptimize this to linear as it is in quant
             GKTriple aux = GKTriple(x,0,0);
             auto firstBiggerIt = upper_bound(L.begin(), L.end(), aux);
             GKTriple &firstBigger = *firstBiggerIt;
