@@ -1,5 +1,6 @@
 #include "args.h"
 #include "csv.h"
+#include "QDigestDocString.h"
 #include<bits/stdc++.h>
 
 using namespace std;
@@ -171,6 +172,10 @@ class QDigest {
 };
 
 int main(int args, char **argv) {
+    // CHECK FOR HELP FLAG
+    ArgsReader argsReader;
+    argsReader.checkHelpOption(args, argv, QDigestDocString::DOC_STRING);
+
     // GET ARGUMENTS
     int column = 0;
     double eps = 0.1;
@@ -186,7 +191,6 @@ int main(int args, char **argv) {
         argsQueue.push(argv[i]);
     }
 
-    ArgsReader argsReader;
 
     argsReader.updateArgs(
         argsQueue,
