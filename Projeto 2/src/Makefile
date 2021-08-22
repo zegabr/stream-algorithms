@@ -2,28 +2,33 @@ CPP_FLAGS = -std=c++17 -O2
 CURR_DIR = $(shell pwd)
 PARENT_DIR = $(abspath $(CURR_DIR)/..)
 
-KLL_SRC_PATH = $(CURR_DIR)/kll.cpp
-KMV_SRC_PATH = $(CURR_DIR)/kmv.cpp
+gk_SRC_PATH = $(CURR_DIR)/gk.cpp
+QDIG_SRC_PATH = $(CURR_DIR)/qdigest.cpp
 
-KLL_BIN_PATH = $(PARENT_DIR)/bin/kll
-KMV_BIN_PATH = $(PARENT_DIR)/bin/kmv
-
-KLL_HELP_PATH = $(CURR_DIR)/helpkll.txt
-KMV_HELP_PATH = $(CURR_DIR)/helpkmv.txt
+GK_BIN_PATH = $(PARENT_DIR)/bin/gk
+qdig_BIN_PATH = $(PARENT_DIR)/bin/qdig
 
 
 default:
 	cat Makefile
 
-build-kll:
-	g++ $(CPP_FLAGS) $(KLL_SRC_PATH) -o $(KLL_BIN_PATH)
+build-gk: 
+	mkdir $(PARENT_DIR)/bin; \
+	g++ $(CPP_FLAGS) $(gk_SRC_PATH) -o $(GK_BIN_PATH);
 
-#build-kmv:
-#	g++ $(CPP_FLAGS) $(KMV_SRC_PATH) -o $(KMV_BIN_PATH)
+build-qdig:
+	mkdir $(PARENT_DIR)/bin; \
+	g++ $(CPP_FLAGS) $(QDIG_SRC_PATH) -o $(qdig_BIN_PATH); \
 
-create-bin-folder:
-	mkdir $(PARENT_DIR)/bin
+build: 
+	mkdir $(PARENT_DIR)/bin; \
+	make build-gk; \
+	make build-qdig; \
 
-build:
-	make build-kll
-#	make build-kmv
+install: build
+	sudo cp $(GK_BIN_PATH) /usr/bin/gk; \
+	sudo cp $(qdig_BIN_PATH) /usr/bin/qdig; \
+
+uninstall:
+	sudo rm /usr/bin/cmin; \
+	sudo rm /usr/bin/kmv; \
