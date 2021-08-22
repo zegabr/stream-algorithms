@@ -3,14 +3,11 @@
 
 #include <iostream>
 #include <fstream>
-#include "hasher.h"
 
 class CSVReader{
     private:
         ifstream fileInput;
-        int idColumn;
-        int weightColumn;
-        Hasher hasher;
+        int valColumn;
 
         // Gets the string of the csv line, given its position
         string getValueGivenPosition(string &line, int pos){
@@ -28,18 +25,10 @@ class CSVReader{
         }
 
     public:
-        // Constructor for Count Min Sketch
-        CSVReader(string &filename, int idCol, int weightCol){
+        // Constructor for Sketches
+        CSVReader(string &filename, int valCol){
             fileInput.open(filename);
-            idColumn = idCol;
-            weightColumn = weightCol;
-            ignoreLine();
-        }
-
-        // Constructor for KMV Sketch
-        CSVReader(string &filename, int idCol){
-            fileInput.open(filename);
-            idColumn = idCol;
+            valColumn = valCol;
             ignoreLine();
         }
 
@@ -48,28 +37,17 @@ class CSVReader{
             return fileInput.peek() != EOF;
         }
 
-        // Gets id and weight in the current csv line for Count Min Sketch
-        vector<long long> getNextValueAndWeight(){
+        // Gets val in the current csv line
+        int getNextValue(){
             string line;
             vector<string> row;
 
             getline(fileInput, line);
-            string idWord = getValueGivenPosition(line, idColumn);
-            string weightWord = getValueGivenPosition(line, weightColumn);
-            return {hasher.getUniqueHash(idWord), stoi(weightWord)};
+            string word = getValueGivenPosition(line, valColumn);
+            return stoi(word);
         }
 
-        // Gets id and weight in the current csv line for KMV Sketch
-        long long getNextValue(){
-            string line;
-            vector<string> row;
-
-            getline(fileInput, line);
-            string word = getValueGivenPosition(line, idColumn);
-            return hasher.getUniqueHash(word);
-        }
-
-        // Ignores a line (only used once inside the constructor)
+        // Ignores a line (only used once in the constructor)
         void ignoreLine(){
             string firstLine;
             getline(fileInput, firstLine);

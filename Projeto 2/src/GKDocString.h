@@ -5,7 +5,7 @@
 
 namespace GKDocString
 {
-    const std::string DOC_STRING = "blablablablablabl TODO: add docstring here"
-                                    "jkljkljl";
+    const std::string DOC_STRING = "TODO: add docstring here\n"
+                                    "";
 }
 #endif
